@@ -1,0 +1,244 @@
+.main-content {
+  margin-left: 250px;
+  padding-top: 60px;
+  min-height: 100vh;
+  background-color: var(--bg-light);
+  width: calc(100% - 250px);
+}
+
+.dashboard-wrapper {
+  padding: 30px;
+  max-width: 100%;
+  overflow: hidden;
+  margin-top: 5vh;
+}
+
+.page-header {
+  margin-bottom: 25px;
+}
+
+.page-header h2 {
+  color: var(--text-dark);
+}
+
+.filters-section {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  margin-bottom: 20px;
+}
+
+#filterForm {
+  display: flex;
+  gap: 20px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-group label {
+  font-size: 0.9rem;
+  color: var(--text-grey);
+  margin-bottom: 5px;
+}
+
+select {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  min-width: 150px;
+  outline: none;
+  background-color: white;
+}
+
+.search-btn {
+  padding: 9px 25px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: background 0.2s;
+  height: 38px;
+}
+
+.search-btn:hover {
+  background-color: #002171;
+}
+
+.legend-container {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 15px;
+  font-size: 0.9rem;
+  color: var(--text-dark);
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.8rem;
+  color: white;
+}
+
+.badge.p {
+  background-color: #0d47a1;
+}
+.badge.a {
+  background-color: #c62828;
+}
+.badge.l {
+  background-color: #2e7d32;
+}
+.badge.h {
+  background-color: #f9a825;
+  color: #333;
+}
+.table-wrapper {
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+
+  width: 100%;
+  overflow-x: auto;
+  white-space: nowrap;
+  padding-bottom: 5px;
+}
+
+.table-wrapper::-webkit-scrollbar {
+  height: 8px;
+}
+.table-wrapper::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+.table-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  border: 1px solid #eee;
+  padding: 10px 8px;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+th {
+  background-color: #f8f9fa;
+  color: var(--text-dark);
+  font-weight: 600;
+}
+
+td.subject {
+  text-align: left;
+  font-weight: 600;
+  padding-left: 15px;
+  background-color: #fff;
+  position: sticky;
+  left: 0;
+  border-right: 2px solid #e0e0e0;
+  z-index: 10;
+}
+
+td.p {
+  color: #0d47a1;
+  background-color: #e3f2fd;
+}
+td.a {
+  color: #c62828;
+  background-color: #ffebee;
+}
+td.l {
+  color: #2e7d32;
+  background-color: #e8f5e9;
+}
+td.h {
+  color: #f9a825;
+  background-color: #fffde7;
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+    width: 100%;
+  }
+}
+
+.filters-section,
+.table-wrapper {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  transition:
+    box-shadow 0.25s ease,
+    transform 0.25s ease;
+}
+
+/* Gentle emphasis on hover */
+.filters-section:hover,
+.table-wrapper:hover {
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.1);
+}
+
+/* Search button micro-interaction */
+.search-btn {
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.2s;
+}
+
+.search-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Select focus polish */
+select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(13, 71, 161, 0.15);
+}
+
+/* Table row hover clarity */
+tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+tbody tr:hover td:not(.subject) {
+  background-color: rgba(13, 71, 161, 0.04);
+}
+
+/* Sticky subject column depth */
+td.subject {
+  box-shadow: 4px 0 6px -4px rgba(0, 0, 0, 0.12);
+}
+
+/* Badge depth */
+.badge {
+  box-shadow:
+    inset 0 -1px 0 rgba(255, 255, 255, 0.25),
+    0 2px 6px rgba(0, 0, 0, 0.15);
+}

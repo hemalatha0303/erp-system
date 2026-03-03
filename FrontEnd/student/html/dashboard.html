@@ -1,0 +1,127 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Student Dashboard - SIH25103</title>
+    <link href="../../style.css" rel="stylesheet" />
+    <link href="../css/components.css" rel="stylesheet" />
+    <link href="../css/dashboard.css" rel="stylesheet" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="sidebar-container"></div>
+    <div class="main-content">
+      <div id="header-container"></div>
+      <div class="dashboard-wrapper">
+        <div class="alert-box" id="ai-alert-box" style="display: none">
+          <i class="fas fa-info-circle" id="ai-icon"></i>
+          <div>
+            <h4 id="ai-title">Attendance Update</h4>
+            <p id="ai-attendance-msg">Loading insights...</p>
+          </div>
+        </div>
+        <div class="welcome-section">
+          <p
+            id="current-date"
+            style="color: #666; font-size: 0.9rem; margin-bottom: 5px"
+          ></p>
+          <h2>Welcome back, <span id="welcome-name">Student</span></h2>
+          <p>Here is your daily overview.</p>
+        </div>
+        <div class="dashboard-grid">
+          <div class="card profile-card">
+            <div class="card-header">
+              <h3>My Profile</h3>
+              <a class="link-btn" href="profile.html">View Full</a>
+            </div>
+            <div class="profile-details">
+              <div class="detail-row">
+                <span>Name:</span> <strong id="profile-name">Loading...</strong>
+              </div>
+              <div class="detail-row">
+                <span>Year/Sem:</span>
+                <strong id="profile-year">Loading...</strong>
+              </div>
+              <div class="detail-row">
+                <span>Branch:</span>
+                <strong id="profile-branch">Loading...</strong>
+              </div>
+              <div class="detail-row">
+                <!-- <span>Class Teacher:</span> -->
+                <!-- <strong id="profile-teacher">Loading...</strong> -->
+              </div>
+            </div>
+          </div>
+          <div class="card stats-card">
+            <h3>Attendance Overview</h3>
+            <div class="chart-container">
+              <div
+                class="circular-progress"
+                id="attendance-circle"
+                style="--progress: 0deg; --color: #e74c3c"
+              >
+                <div class="inner-circle">
+                  <span id="stat-attendance">0%</span>
+                  <small>Avg</small>
+                </div>
+              </div>
+              <p class="chart-label">Overall Attendance</p>
+            </div>
+          </div>
+          <div class="card stats-card">
+            <h3>Academic Performance</h3>
+            <div class="gpa-display">
+              <span class="gpa-score" id="stat-cgpa">0.0</span>
+              <span class="gpa-scale">/ 10.0 CGPA</span>
+            </div>
+            <p class="chart-label">Current Performance</p>
+          </div>
+          <div class="card notification-card">
+            <h3>Recent Updates</h3>
+            <ul class="notif-list">
+              <li>
+                <span class="icon pending">
+                  <i class="fas fa-credit-card"></i>
+                </span>
+                <div>
+                  <strong>Fee Status</strong>
+                  <p id="stat-fees">Checking...</p>
+                </div>
+              </li>
+              <li>
+                <span class="icon info">
+                  <i class="fas fa-book"></i>
+                </span>
+                <div>
+                  <strong>Library Status</strong>
+                  <p>Active Books: <span id="stat-library">0</span></p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="card timetable-card">
+          <h4><i class="fas fa-calendar-alt"></i> Today's Timetable</h4>
+          <div class="timetable-placeholder" id="timetable-display">
+            <img
+              alt="Timetable not uploaded"
+              id="tt-image"
+              src="."
+              style="max-width: 600px; display: none; border-radius: 4px"
+            />
+            <p id="tt-msg" style="font-size: 0.9rem; margin-top: 5px">
+              Loading schedule...
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="../js/main.js"></script>
+    <script src="../js/dashboard.js"></script>
+  </body>
+</html>

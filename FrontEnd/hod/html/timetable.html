@@ -1,0 +1,74 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Work Distribution</title>
+    <link href="../../style.css" rel="stylesheet" />
+    <link href="../css/components.css" rel="stylesheet" />
+    <link href="../css/hod.css" rel="stylesheet" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="sidebar-container"></div>
+    <div id="header-container"></div>
+    <div class="main-content">
+      <div class="dashboard-wrapper">
+        <div class="page-header"><h2>Faculty Work Distribution</h2></div>
+        <div class="card">
+          <h3>Upload Timetable</h3>
+          <div class="form-group">
+            <label>Upload Type</label>
+            <select id="tt-type" onchange="toggleTimetableInputs()">
+              <option value="CLASS">Class Timetable</option>
+              <option value="FACULTY">Faculty Workload</option>
+            </select>
+          </div>
+          <div class="filters-row" style="margin-top: 10px">
+            <input id="tt-year" placeholder="Year" type="number" />
+            <input id="tt-sem" placeholder="Semester" type="number" />
+            <div class="inline-group">
+              <input
+                id="tt-branch"
+                type="text"
+                placeholder="Enter branch code"
+                style="text-transform: uppercase"
+                oninput="this.value = this.value.toUpperCase()"
+              />
+            </div>
+
+            <div class="inline-group">
+              <input
+                id="tt-sec"
+                type="text"
+                placeholder="Enter section"
+                style="text-transform: uppercase"
+                oninput="this.value = this.value.toUpperCase()"
+              />
+            </div>
+
+            <input
+              class="fac-only"
+              id="tt-fac-email"
+              placeholder="Faculty Email"
+              style="display: none"
+              type="text"
+            />
+          </div>
+          <div class="form-group" style="margin-top: 20px">
+            <label>Timetable Image</label>
+            <input accept="image/*" id="tt-file" type="file" />
+          </div>
+          <button class="primary-btn" onclick="uploadTimetable()">
+            Upload &amp; Assign
+          </button>
+        </div>
+      </div>
+    </div>
+    <script src="../js/main.js"></script>
+    <script src="../js/timetable.js"></script>
+  </body>
+</html>

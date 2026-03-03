@@ -1,0 +1,143 @@
+.welcome-card {
+  background: linear-gradient(135deg, #0d47a1, #1976d2);
+  color: white;
+  padding: 30px;
+  border-radius: 12px;
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 15px rgba(13, 71, 161, 0.2);
+}
+
+.welcome-text h2 {
+  font-size: 1.8rem;
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+
+.welcome-text p {
+  font-size: 1rem;
+  opacity: 0.9;
+}
+
+.date-display {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  backdrop-filter: blur(5px);
+}
+
+.grid-2-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+}
+
+.profile-details {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.95rem;
+}
+
+.detail-row span {
+  color: #666;
+}
+
+.detail-row strong {
+  color: #222;
+  font-weight: 600;
+}
+
+.highlight {
+  color: #0d47a1;
+  background: #e3f2fd;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.timetable-placeholder {
+  min-height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f9f9f9;
+  border-radius: 8px;
+  border: 2px dashed #e0e0e0;
+  color: #888;
+}
+
+@media (max-width: 900px) {
+  .grid-2-col {
+    grid-template-columns: 1fr;
+  }
+}
+
+.welcome-card {
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.welcome-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(13, 71, 161, 0.35);
+}
+
+/* Gradient glow edge */
+.welcome-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+}
+
+/* Date pill polish */
+.date-display {
+  box-shadow:
+    inset 0 -1px 0 rgba(255, 255, 255, 0.25),
+    0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Profile detail row hover cue */
+.detail-row {
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+  padding: 4px 6px;
+  border-radius: 4px;
+}
+
+.detail-row:hover {
+  background-color: rgba(13, 71, 161, 0.05);
+  transform: translateX(2px);
+}
+
+/* Highlight badge depth */
+.highlight {
+  box-shadow:
+    inset 0 -1px 0 rgba(255, 255, 255, 0.35),
+    0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+/* Timetable placeholder polish */
+.timetable-placeholder {
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.timetable-placeholder:hover {
+  background-color: #f1f5f9;
+  border-color: #cfd8dc;
+}

@@ -1,0 +1,231 @@
+.main-content {
+  margin-left: 250px;
+  padding-top: 60px;
+  background-color: var(--bg-light);
+  width: calc(100% - 250px);
+  margin-top: 10vh;
+}
+
+.dashboard-wrapper {
+  padding: 30px;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.page-header {
+  margin-bottom: 25px;
+}
+
+.page-header h2 {
+  color: var(--text-dark);
+}
+
+.filters-section {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-group label {
+  font-size: 0.9rem;
+  color: var(--text-grey);
+  margin-bottom: 5px;
+}
+
+select {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  min-width: 200px;
+  outline: none;
+  background-color: white;
+}
+
+.info-note {
+  background-color: #fff3cd;
+  color: #856404;
+  padding: 10px 15px;
+  border-radius: 4px;
+  border: 1px solid #ffeeba;
+  font-size: 0.9rem;
+  max-width: 500px;
+}
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 15px;
+  border-left: 4px solid var(--primary-color);
+  padding-left: 10px;
+}
+
+.table-container {
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+
+  width: 100%;
+  overflow-x: auto;
+  padding-bottom: 5px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 800px;
+}
+
+th,
+td {
+  padding: 15px;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+th {
+  background-color: #f8f9fa;
+  color: var(--text-dark);
+  font-weight: 600;
+}
+
+th.sticky-col,
+td:first-child {
+  position: sticky;
+  left: 0;
+  background-color: white;
+  z-index: 10;
+  border-right: 2px solid #f0f0f0;
+  text-align: left;
+  padding-left: 20px;
+}
+
+th.sticky-col {
+  background-color: #f8f9fa;
+  z-index: 11;
+}
+
+.status-paid {
+  color: #28a745;
+  background-color: #e6ffe6;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.status-due {
+  color: #dc3545;
+  background-color: #ffe6e6;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.status-partial {
+  color: #d39e00;
+  background-color: #fff3cd;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.download-icon-btn {
+  text-decoration: none;
+  color: var(--primary-color);
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid var(--primary-color);
+  padding: 5px 10px;
+  border-radius: 4px;
+  transition: all 0.2s;
+  font-size: 0.85rem;
+}
+
+.download-icon-btn:hover {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+    width: 100%;
+  }
+}
+
+.filters-section,
+.table-container {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  transition:
+    box-shadow 0.25s ease,
+    transform 0.25s ease;
+}
+
+/* Gentle hover emphasis */
+.filters-section:hover,
+.table-container:hover {
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.1);
+}
+
+/* Select focus polish */
+select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(13, 71, 161, 0.15);
+}
+
+/* Table row clarity */
+tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+tbody tr:hover td:not(:first-child) {
+  background-color: rgba(13, 71, 161, 0.04);
+}
+
+/* Sticky column depth cue */
+th.sticky-col,
+td:first-child {
+  box-shadow: 4px 0 6px -4px rgba(0, 0, 0, 0.12);
+}
+
+/* Status badge depth */
+.status-paid,
+.status-due,
+.status-partial {
+  box-shadow:
+    inset 0 -1px 0 rgba(255, 255, 255, 0.35),
+    0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+/* Download button micro-interaction */
+.download-icon-btn {
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.2s,
+    color 0.2s;
+}
+
+.download-icon-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}

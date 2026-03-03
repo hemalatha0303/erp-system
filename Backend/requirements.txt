@@ -1,0 +1,17 @@
+fastapi
+uvicorn
+sqlalchemy
+pymysql
+python-jose
+passlib[bcrypt]
+pydantic
+python-dotenv
+openpyxl
+pandas
+cryptography
+multipart
+python-multipart
+joblib
+shap
+scikit-learn
+xgboost

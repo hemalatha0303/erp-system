@@ -1,0 +1,53 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>HOD Dashboard - ERP</title>
+    <link href="../../style.css" rel="stylesheet" />
+    <link href="../css/components.css" rel="stylesheet" />
+    <link href="../css/dashboard.css" rel="stylesheet" />
+    <link href="../css/hod.css" rel="stylesheet" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="sidebar-container"></div>
+    <div id="header-container"></div>
+    <div class="main-content">
+      <div class="dashboard-wrapper">
+        <div class="welcome-card">
+          <div class="welcome-text">
+            <h2>Welcome back, <span id="fac-name">Professor</span>! 👋</h2>
+            <p>Glad to see you—let’s make today productive.</p>
+          </div>
+          <div class="date-display" id="current-date">...</div>
+        </div>
+        <div class="grid">
+          <div class="card">
+            <h3><i class="fas fa-user-tie"></i> Profile Details</h3>
+            <div class="profile-details">
+              <div class="detail-row">
+                <span>Name:</span> <strong id="p-name">Loading...</strong>
+              </div>
+              <div class="detail-row">
+                <span>Qualification:</span>
+                <strong id="p-qual">Loading...</strong>
+              </div>
+              <div class="detail-row">
+                <span>Department:</span> <strong id="p-dept">Loading...</strong>
+              </div>
+              <div class="detail-row">
+                <span>Experience:</span> <strong id="p-exp">Loading...</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="../js/main.js"></script>
+    <script src="../js/dashboard.js"></script>
+  </body>
+</html>

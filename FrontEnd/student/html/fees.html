@@ -1,0 +1,82 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Fees &amp; Payments - SIH25103</title>
+    <link href="../../style.css" rel="stylesheet" />
+    <link href="../css/components.css" rel="stylesheet" />
+    <link href="../css/fees.css" rel="stylesheet" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  </head>
+  <body>
+    <div id="sidebar-container"></div>
+    <div id="header-container"></div>
+    <div class="main-content">
+      <div class="dashboard-wrapper">
+        <div class="page-header">
+          <h2>Fees &amp; Payments</h2>
+        </div>
+        <div class="filters-section">
+          <div class="filter-group">
+            <label for="semesterSelect">Select Semester</label>
+            <select id="semesterSelect" onchange="updateFeeView()">
+              <option value="1">1st Semester</option>
+              <option value="2">2nd Semester</option>
+              <option value="3">3rd Semester</option>
+              <option value="4">4th Semester</option>
+              <option value="5">5th Semester</option>
+              <option value="6">6th Semester</option>
+              <option value="7">7th Semester</option>
+              <option value="8">8th Semester</option>
+            </select>
+          </div>
+          <div class="info-note">
+            ⚠️ <strong>Note:</strong> Online payments are disabled. Please visit
+            the Administrative Office to make fee payments.
+          </div>
+        </div>
+        <div class="section-title">Fee Breakdown</div>
+        <div class="table-container">
+          <table id="feeStructureTable">
+            <thead>
+              <tr>
+                <th class="sticky-col">Fee Category</th>
+                <th>Total Amount (₹)</th>
+                <th>Paid Amount (₹)</th>
+                <th>Balance Due (₹)</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="structureBody"></tbody>
+          </table>
+        </div>
+        <div class="section-title" style="margin-top: 30px">
+          Payment History &amp; Receipts
+        </div>
+        <div class="table-container">
+          <table id="transactionTable">
+            <thead>
+              <tr>
+                <th class="sticky-col">Date</th>
+                <th>Fee Category</th>
+                <th>Ref Number</th>
+                <th>Amount Paid (₹)</th>
+                <th>Rem. Balance (₹)</th>
+                <th>Receipt</th>
+              </tr>
+            </thead>
+            <tbody id="transactionBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <script src="../js/main.js"></script>
+    <script src="../js/fees.js"></script>
+  </body>
+</html>

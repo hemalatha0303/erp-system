@@ -1,0 +1,68 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Hostel Management - Admin ERP</title>
+    <link href="../../style.css" rel="stylesheet" />
+    <link href="../css/components.css" rel="stylesheet" />
+    <link href="../css/hostel.css" rel="stylesheet" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="sidebar-container"></div>
+    <div class="main-content">
+      <div id="header-container"></div>
+      <div class="dashboard-wrapper">
+        <div class="page-header">
+          <h2>Hostel Management</h2>
+        </div>
+        <div class="card">
+          <h3><i class="fas fa-file-excel"></i> Upload Room List (Excel)</h3>
+          <p style="margin-bottom: 15px; color: #666; font-size: 0.9rem">
+            Upload an Excel file containing columns:
+            <strong>Room Number, Sharing, Type, Capacity</strong>.
+          </p>
+          <input accept=".xlsx, .xls" id="roomFile" type="file" />
+          <button onclick="uploadRooms()">
+            <i class="fas fa-upload"></i> Upload Rooms
+          </button>
+        </div>
+        <div class="card">
+          <h3><i class="fas fa-key"></i> Allocate Room</h3>
+          <div class="form-group">
+            <label>Student Roll Number</label>
+            <input id="alloc-roll" placeholder="" type="text" />
+          </div>
+          <div class="form-group">
+            <label>Room ID </label>
+            <input id="alloc-room-id" placeholder="" type="text" />
+          </div>
+          <button onclick="allocateRoom()">
+            <i class="fas fa-check-circle"></i> Allocate
+          </button>
+        </div>
+        <div class="card">
+          <h3><i class="fas fa-key"></i> Vacate Room</h3>
+          <div class="form-group">
+            <label>Student Roll Number</label>
+            <input id="vacate-roll" placeholder="" type="text" />
+          </div>
+          <div class="form-group">
+            <label>Room ID </label>
+            <input id="vacate-room-id" placeholder="" type="text" />
+          </div>
+          <button onclick="vacateRoom()">
+            <i class="fas fa-check-circle"></i> vacate
+          </button>
+        </div>
+      </div>
+    </div>
+    <script src="../js/main.js"></script>
+    <script src="../js/hostel.js"></script>
+  </body>
+</html>

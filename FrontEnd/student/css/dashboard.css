@@ -1,0 +1,236 @@
+.main-content {
+  margin-left: 250px;
+  padding-top: 60px;
+  min-height: 100vh;
+  background-color: #f4f7f6;
+  transition: margin-left 0.3s;
+  margin-top: 200px;
+}
+
+.dashboard-wrapper {
+  margin-top: 40vh;
+  padding: 30px;
+  transition: margin-top 0.3s ease;
+  max-width: 1400px; /* or 1500px */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.alert-box {
+  background: #fee2e2;
+  border-left: 5px solid #ef4444;
+  color: #b91c1c;
+  padding: 15px 20px;
+  border-radius: 8px;
+  margin-top: 50vh;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+}
+.card {
+  margin-top: 20px;
+}
+
+.timetable-placeholder {
+  min-height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f9f9f9;
+  border-radius: 8px;
+  border: 2px dashed #e0e0e0;
+  color: #888;
+}
+
+.alert-box i {
+  font-size: 1.5rem;
+}
+
+.alert-box h4 {
+  margin-bottom: 2px;
+}
+
+.welcome-section {
+  margin-bottom: 25px;
+}
+
+.welcome-section h2 {
+  color: #2c3e50;
+}
+
+.welcome-section p {
+  color: #7f8c8d;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(420px, 1fr));
+  gap: 30px;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.card h3 {
+  color: #34495e;
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #f1f2f6;
+  padding-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.link-btn {
+  font-size: 0.8rem;
+  color: #3498db;
+  text-decoration: none;
+}
+
+.profile-details .detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px dashed #eee;
+}
+
+.profile-details .detail-row:last-child {
+  border-bottom: none;
+}
+
+.chart-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.circular-progress {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: conic-gradient(var(--color) var(--progress), #ecf0f1 0deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.inner-circle {
+  width: 90px;
+  height: 90px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #2c3e50;
+  font-size: 1.2rem;
+}
+
+.chart-label {
+  font-size: 0.9rem;
+  color: #7f8c8d;
+}
+
+.gpa-display {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.gpa-score {
+  display: block;
+  font-size: 3rem;
+  font-weight: bold;
+  color: #3498db;
+}
+
+.gpa-scale {
+  color: #95a5a6;
+  font-size: 0.9rem;
+}
+
+.notif-list {
+  list-style: none;
+  padding: 0;
+}
+
+.notif-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #f1f2f6;
+}
+
+.notif-list li:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.notif-list .icon {
+  font-size: 1.2rem;
+  background: #f1f2f6;
+  padding: 8px;
+  border-radius: 50%;
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+  }
+}
+
+/* Find and replace .card */
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+
+  /* NEW SHADOW STYLE */
+  /* Was: box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.02); /* Subtle border for definition */
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  /* Stronger shadow on hover */
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+}
+
+
+.timetable-card {
+  padding: 10px 15px;
+  margin: 10px 0;
+  max-width: 600px;
+  font-size: 0.95rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  border-radius: 6px;
+  margin-left: auto;
+  margin-right: auto;
+  justify-content: center;
+}
+.timetable-card h4 {
+  font-size: 1rem;
+  margin-bottom: 8px;
+}
+.timetable-placeholder {
+  text-align: center;
+}

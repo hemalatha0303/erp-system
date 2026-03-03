@@ -1,0 +1,90 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Attendance - SIH25103</title>
+    <link href="../../style.css" rel="stylesheet" />
+    <link href="../css/components.css" rel="stylesheet" />
+    <link href="../css/attendance.css" rel="stylesheet" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="sidebar-container"></div>
+    <div class="main-content">
+      <div id="header-container"></div>
+      <div class="dashboard-wrapper">
+        <div class="page-header">
+          <h2>Monthly Attendance</h2>
+        </div>
+        <div class="filters-section">
+          <form id="filterForm">
+            <!-- <div class="filter-group">
+                        <label>Semester</label>
+                        <select name="semester" id="semester">
+                            <option value="1">1st Semester</option>
+                            <option value="2">2nd Semester</option>
+                            <option value="3">3rd Semester</option>
+                            <option value="4">4th Semester</option>
+                            <option value="5">5th Semester</option>
+                            <option value="6">6th Semester</option>
+                            <option value="7">7th Semester</option>
+                            <option value="8">8th Semester</option>
+                        </select>
+                    </div> -->
+            <div class="filter-group">
+              <label>Month</label>
+              <select id="att-month" name="month">
+                <option value="1">January</option>
+                <option value="2">February</option>
+                <option value="3">March</option>
+                <option value="4">April</option>
+                <option value="5">May</option>
+                <option value="6">June</option>
+                <option value="7">July</option>
+                <option value="8">August</option>
+                <option value="9">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label>Year</label>
+              <select id="att-year" name="year">
+                <option value="2020">2020</option>
+                <option value="2021">2021</option>
+                <option value="2022">2022</option>
+                <option value="2023">2023</option>
+                <option value="2024">2024</option>
+                <option value="2025">2025</option>
+                <option value="2026">2026</option>
+              </select>
+            </div>
+            <button class="search-btn" onclick="loadAttendance()" type="button">
+              Search
+            </button>
+          </form>
+        </div>
+        <div class="legend-container">
+          <div class="legend-item"><span class="badge p">P</span> Present</div>
+          <div class="legend-item"><span class="badge a">A</span> Absent</div>
+          <div class="legend-item"><span class="badge l">L</span> Leave</div>
+          <div class="legend-item"><span class="badge h">H</span> Holiday</div>
+        </div>
+        <div class="table-wrapper">
+          <table id="attendanceTable">
+            <thead id="tableHead"></thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <script src="../js/main.js"></script>
+    <script src="../js/attendance.js"></script>
+  </body>
+</html>

@@ -1,0 +1,114 @@
+.search-card {
+  background: white;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  margin-bottom: 20px;
+}
+
+.input-with-btn {
+  display: flex;
+  gap: 10px;
+  max-width: 500px;
+}
+
+.input-with-btn input {
+  flex-grow: 1;
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  text-transform: uppercase;
+}
+
+.input-with-btn .primary-btn {
+  padding: 0 25px;
+  background-color: #0d47a1;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.2s;
+}
+
+.input-with-btn .primary-btn:hover {
+  background-color: #1565c0;
+}
+
+.alert-btn {
+  background-color: #ff9800;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: background 0.2s;
+}
+
+.alert-btn:hover {
+  background-color: #f57c00;
+}
+
+.data-table th,
+.data-table td {
+  padding: 15px;
+  vertical-align: middle;
+}
+
+.search-card {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  transition:
+    box-shadow 0.3s ease,
+    transform 0.3s ease;
+  will-change: box-shadow, transform;
+}
+.search-card:hover {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  transform: translateY(-3px);
+}
+
+/* Smooth focus effect on input inside input-with-btn */
+.input-with-btn input:focus {
+  border-color: #0d47a1;
+  outline: none;
+  box-shadow: 0 0 6px rgba(13, 71, 161, 0.3);
+  transition:
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
+}
+
+/* Primary button subtle shadow and scale on hover */
+.input-with-btn .primary-btn {
+  transition:
+    background-color 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.2s ease;
+  will-change: background-color, box-shadow, transform;
+}
+.input-with-btn .primary-btn:hover {
+  box-shadow: 0 6px 14px rgba(13, 71, 161, 0.3);
+  transform: scale(1.05);
+  background-color: #1565c0;
+}
+
+/* Alert button subtle shadow and scale on hover */
+.alert-btn {
+  transition:
+    background-color 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.2s ease;
+  will-change: background-color, box-shadow, transform;
+}
+.alert-btn:hover {
+  box-shadow: 0 6px 14px rgba(255, 152, 0, 0.3);
+  transform: scale(1.05);
+  background-color: #f57c00;
+}
