@@ -1,0 +1,237 @@
+.page-header {
+  margin-top: 40px;
+  margin-bottom: 25px;
+}
+
+.page-header h2 {
+  color: var(--text-dark);
+  font-weight: 600;
+}
+
+.grid-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 30px;
+}
+
+@media (min-width: 1024px) {
+  .grid-layout {
+    grid-template-columns: 1fr 1.5fr;
+  }
+}
+
+.card {
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+  height: fit-content;
+}
+
+.card h3 {
+  margin-top: 0;
+  color: var(--text-dark);
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.helper-text {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #444;
+  font-size: 0.9rem;
+}
+
+select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: white;
+  font-size: 1rem;
+}
+
+.upload-area {
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  padding: 30px;
+  text-align: center;
+  background-color: #fafafa;
+  cursor: pointer;
+  margin-bottom: 20px;
+  transition: all 0.3s;
+}
+
+.upload-area:hover {
+  border-color: var(--primary-color);
+  background-color: #f0f7ff;
+}
+
+.upload-area i {
+  font-size: 2.5rem;
+  color: #bbb;
+  margin-bottom: 10px;
+}
+
+.upload-area p {
+  margin: 0;
+  font-weight: 500;
+  color: #666;
+}
+
+#file-name {
+  display: block;
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.primary-btn {
+  background-color: var(--text-dark);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.2s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.primary-btn:hover {
+  background-color: var(--primary-color);
+}
+
+.btn-download {
+  background-color: #27ae60;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.btn-download:hover {
+  background-color: #219150;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 15px;
+  margin-bottom: 15px;
+}
+
+.card-header h3 {
+  margin-bottom: 0;
+}
+
+.table-wrapper {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th,
+.data-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+  font-size: 0.95rem;
+}
+
+.data-table th {
+  background-color: #f9fafb;
+  position: sticky;
+  top: 0;
+  font-weight: 600;
+  color: #444;
+}
+
+.data-table tr:hover {
+  background-color: #f9f9f9;
+}
+
+.data-table td:nth-child(3) {
+  font-family: monospace;
+  background-color: #f5f5f5;
+  color: #d32f2f;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+.card {
+  transition:
+    box-shadow 0.3s ease,
+    transform 0.2s ease;
+  will-change: box-shadow, transform;
+}
+
+.card:hover {
+  box-shadow: 0 10px 25px rgba(13, 71, 161, 0.12);
+  transform: translateY(-4px);
+}
+
+/* Smooth scrollbar for .table-wrapper */
+.table-wrapper {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(13, 71, 161, 0.3) transparent;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-wrapper::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.table-wrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb {
+  background-color: rgba(13, 71, 161, 0.3);
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+/* Button subtle scaling on hover */
+.primary-btn:hover,
+.btn-download:hover {
+  transform: scale(1.05);
+  transition:
+    background-color 0.3s ease,
+    transform 0.3s ease;
+}

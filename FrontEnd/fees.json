@@ -1,0 +1,132 @@
+{
+  "items": [
+    {
+      "quota": "CONVENER",
+      "residence_type": "DAY_SCHOLAR",
+      "tuition_fee": 45000,
+      "bus_fee": 12000,
+      "hostel_fee": 0,
+      "year": 1
+    },
+    {
+      "quota": "CONVENER",
+      "residence_type": "DAY_SCHOLAR",
+      "tuition_fee": 50000,
+      "bus_fee": 14000,
+      "hostel_fee": 0,
+      "year": 2
+    },
+    {
+      "quota": "CONVENER",
+      "residence_type": "DAY_SCHOLAR",
+      "tuition_fee": 55000,
+      "bus_fee": 16000,
+      "hostel_fee": 0,
+      "year": 3
+    },
+    {
+      "quota": "CONVENER",
+      "residence_type": "DAY_SCHOLAR",
+      "tuition_fee": 60000,
+      "bus_fee": 18000,
+      "hostel_fee": 0,
+      "year": 4
+    },
+    {
+      "quota": "CONVENER",
+      "residence_type": "HOSTELER",
+      "tuition_fee": 45000,
+      "bus_fee": 0,
+      "hostel_fee": 45000,
+      "year": 1
+    },
+    {
+      "quota": "CONVENER",
+      "residence_type": "HOSTELER",
+      "tuition_fee": 50000,
+      "bus_fee": 0,
+      "hostel_fee": 50000,
+      "year": 2
+    },
+    {
+      "quota": "CONVENER",
+      "residence_type": "HOSTELER",
+      "tuition_fee": 55000,
+      "bus_fee": 0,
+      "hostel_fee": 55000,
+      "year": 3
+    },
+    {
+      "quota": "CONVENER",
+      "residence_type": "HOSTELER",
+      "tuition_fee": 60000,
+      "bus_fee": 0,
+      "hostel_fee": 60000,
+      "year": 4
+    },
+    {
+      "quota": "MANAGEMENT",
+      "residence_type": "DAY_SCHOLAR",
+      "tuition_fee": 85000,
+      "bus_fee": 12000,
+      "hostel_fee": 0,
+      "year": 1
+    },
+    {
+      "quota": "MANAGEMENT",
+      "residence_type": "DAY_SCHOLAR",
+      "tuition_fee": 90000,
+      "bus_fee": 14000,
+      "hostel_fee": 0,
+      "year": 2
+    },
+    {
+      "quota": "MANAGEMENT",
+      "residence_type": "DAY_SCHOLAR",
+      "tuition_fee": 95000,
+      "bus_fee": 16000,
+      "hostel_fee": 0,
+      "year": 3
+    },
+    {
+      "quota": "MANAGEMENT",
+      "residence_type": "DAY_SCHOLAR",
+      "tuition_fee": 100000,
+      "bus_fee": 18000,
+      "hostel_fee": 0,
+      "year": 4
+    },
+    {
+      "quota": "MANAGEMENT",
+      "residence_type": "HOSTELER",
+      "tuition_fee": 85000,
+      "bus_fee": 0,
+      "hostel_fee": 45000,
+      "year": 1
+    },
+    {
+      "quota": "MANAGEMENT",
+      "residence_type": "HOSTELER",
+      "tuition_fee": 90000,
+      "bus_fee": 0,
+      "hostel_fee": 50000,
+      "year": 2
+    },
+    {
+      "quota": "MANAGEMENT",
+      "residence_type": "HOSTELER",
+      "tuition_fee": 95000,
+      "bus_fee": 0,
+      "hostel_fee": 55000,
+      "year": 3
+    },
+    {
+      "quota": "MANAGEMENT",
+      "residence_type": "HOSTELER",
+      "tuition_fee": 100000,
+      "bus_fee": 0,
+      "hostel_fee": 60000,
+      "year": 4
+    }
+  ]
+}

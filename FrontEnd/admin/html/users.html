@@ -1,0 +1,91 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>User Management - Admin ERP</title>
+    <link href="../../style.css" rel="stylesheet" />
+    <link href="../css/components.css" rel="stylesheet" />
+    <link href="../css/users.css" rel="stylesheet" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="sidebar-container"></div>
+    <div class="main-content">
+      <div id="header-container"></div>
+      <div class="dashboard-wrapper">
+        <div class="page-header">
+          <h2>User Account Management</h2>
+        </div>
+        <div class="grid-layout">
+          <div class="card upload-card">
+            <h3><i class="fas fa-user-plus"></i> Bulk User Creation</h3>
+            <p class="helper-text">
+              Upload an Excel file with <strong>'email'</strong> column containing @vvit.net addresses.
+              The system will generate random passwords only for @vvit.net email addresses and skip existing users.
+            </p>
+            <div class="info-box" style="margin: 15px 0; padding: 12px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
+              <strong style="color: #856404;">⚠ Important:</strong>
+              <p style="margin: 5px 0; color: #856404; font-size: 0.9em;">
+                Only email addresses ending with <strong>@vvit.net</strong> will be processed. 
+                Other emails and existing users will be skipped. Excel file should have 'email' column.
+              </p>
+            </div>
+            <div class="form-group">
+              <label>Select Role</label>
+              <select id="userRole">
+                <option value="STUDENT">Student</option>
+                <option value="FACULTY">Faculty</option>
+                <option value="HOD">HOD</option>
+              </select>
+            </div>
+            <div class="upload-area" id="drop-zone">
+              <input accept=".xlsx, .xls" hidden="" id="userFile" type="file" />
+              <i class="fas fa-cloud-upload-alt"></i>
+              <p>
+                Drag &amp; Drop or
+                <span class="clickable" onclick="document.getElementById('userFile').click()">Choose File</span>
+              </p>
+              <span id="file-name"></span>
+            </div>
+            <button class="primary-btn" onclick="bulkUserSignup()">
+              <i class="fas fa-cogs"></i> Generate Accounts
+            </button>
+          </div>
+          <div
+            class="card results-card"
+            id="results-container"
+            style="display: none"
+          >
+            <div class="card-header">
+              <h3><i class="fas fa-key"></i> Generated Credentials</h3>
+              <button class="btn-download" onclick="downloadCredentials()">
+                <i class="fas fa-download"></i> Download CSV
+              </button>
+            </div>
+            <div id="processing-info" style="display: none; padding: 10px; background: #e7f3ff; border: 1px solid #b3d9ff; border-radius: 4px; margin-bottom: 10px;">
+              <p id="processing-text" style="margin: 0; font-size: 0.9em;"></p>
+            </div>
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>Email</th>
+                    <th>Generated Password</th>
+                  </tr>
+                </thead>
+                <tbody id="credentials-list"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="../js/main.js"></script>
+    <script src="../js/users.js"></script>
+  </body>
+</html>

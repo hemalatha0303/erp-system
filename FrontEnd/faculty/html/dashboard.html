@@ -1,0 +1,77 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Faculty Dashboard - ERP</title>
+    <link href="../../style.css" rel="stylesheet" />
+    <link href="../css/components.css" rel="stylesheet" />
+    <link href="../css/faculty.css" rel="stylesheet" />
+    <link href="../css/dashboard.css" rel="stylesheet" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="sidebar-container"></div>
+    <div class="main-content">
+      <div id="header-container"></div>
+      <div class="dashboard-wrapper">
+        <div class="welcome-card">
+          <div class="welcome-text">
+            <h2>Welcome back, <span id="fac-name">Professor</span>! 👋</h2>
+            <p>Glad to see you—let’s make today productive.</p>
+          </div>
+          <div class="date-display" id="current-date">...</div>
+        </div>
+        <div class="grid-2-col">
+          <div class="card">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 15px;
+              "
+            >
+              <h3 style="margin: 0">
+                <i class="fas fa-id-card"></i> My Profile
+              </h3>
+            </div>
+            <div class="profile-details">
+              <div class="detail-row">
+                <span>Name:</span> <strong id="p-name">Loading...</strong>
+              </div>
+              <div class="detail-row">
+                <span>Qualification:</span>
+                <strong id="p-qual">Loading...</strong>
+              </div>
+              <div class="detail-row">
+                <span>Experience:</span> <strong id="p-exp">Loading...</strong>
+              </div>
+              <div class="detail-row">
+                <!-- <span>Class Teacher:</span> -->
+                <!-- <strong class="highlight">CSE - III Year - A</strong> -->
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <h3><i class="fas fa-calendar-alt"></i> Today's Timetable</h3>
+            <div class="timetable-placeholder" id="timetable-display">
+              <img
+                alt="Timetable not uploaded"
+                id="tt-image"
+                src="."
+                style="max-width: 100%; display: none"
+              />
+              <p id="tt-msg">Loading schedule...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="../js/main.js"></script>
+    <script src="../js/dashboard.js"></script>
+  </body>
+</html>

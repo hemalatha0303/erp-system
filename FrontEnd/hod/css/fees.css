@@ -1,0 +1,58 @@
+.center-content {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pie-chart {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: conic-gradient(#27ae60 0% 85%, #c0392b 85% 100%);
+  position: relative;
+  cursor: pointer;
+  margin: 20px 0;
+  transition: transform 0.2s;
+}
+
+.pie-chart:hover {
+  transform: scale(1.05);
+}
+
+.pie-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #333;
+}
+
+.chart-legend {
+  display: flex;
+  gap: 15px;
+  font-size: 0.9rem;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 5px;
+}
+
+.green {
+  background: #27ae60;
+}
+.red {
+  background: #c0392b;
+}

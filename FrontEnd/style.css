@@ -1,0 +1,157 @@
+:root {
+  --primary-color: #0d47a1;
+  --text-dark: #121212;
+  --text-grey: #555555;
+  --bg-light: #f4f6f8;
+  --white: #ffffff;
+  --border-color: #d1d5db;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-light);
+  overflow-y: auto;
+}
+.login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+.login-container {
+  background: var(--white);
+  padding: 2.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.login-header h2 {
+  color: var(--text-dark);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  border-bottom: 3px solid var(--primary-color);
+  display: inline-block;
+  padding-bottom: 5px;
+}
+
+.login-header p {
+  color: var(--text-grey);
+  font-size: 0.9rem;
+}
+
+.form-group {
+  margin-bottom: 1.2rem;
+  width: 100%;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--text-dark);
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid var(--border-color);
+  background: #fafafa;
+  color: var(--text-dark);
+  border-radius: 5px;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: var(--primary-color);
+  background: var(--white);
+  box-shadow: 0 0 0 3px rgba(13, 71, 161, 0.1);
+}
+
+.form-group select {
+  cursor: pointer;
+  background-color: #fff;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1.5rem;
+}
+
+.forgot-password {
+  text-decoration: none;
+  color: var(--text-grey);
+  font-size: 0.85rem;
+  transition: color 0.2s;
+}
+
+.forgot-password:hover {
+  color: var(--primary-color);
+}
+
+.login-btn {
+  width: 100%;
+  padding: 0.9rem;
+  background: var(--text-dark);
+  color: var(--white);
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: background 0.3s;
+}
+
+.login-btn:hover {
+  background: var(--primary-color);
+}
+
+.error-message {
+  margin-top: 1rem;
+  color: #c53030;
+  text-align: center;
+  font-size: 0.9rem;
+  min-height: 20px;
+}
+
+/* Find and replace .login-container */
+.login-container {
+  /* ... keep existing properties ... */
+
+  /* Enhanced shadow */
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.05); /* Softer border */
+}
+
+/* Optional: Add shadow to input focus state */
+.form-group input:focus,
+.form-group select:focus {
+  border-color: var(--primary-color);
+  background: var(--white);
+  box-shadow: 0 4px 10px rgba(13, 71, 161, 0.15); /* Soft blue glow shadow */
+}

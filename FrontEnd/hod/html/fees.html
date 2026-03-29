@@ -1,0 +1,79 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Fee Compliance</title>
+    <link href="../../style.css" rel="stylesheet" />
+    <link href="../css/components.css" rel="stylesheet" />
+    <link href="../css/fees.css" rel="stylesheet" />
+    <link href="../css/hod.css" rel="stylesheet" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="sidebar-container"></div>
+    <div id="header-container"></div>
+    <div class="main-content">
+      <div class="dashboard-wrapper">
+        <div class="page-header"><h2>Fee Compliance</h2></div>
+        <div class="card filters-row">
+          <label>Select Batch:</label>
+          <input id="fee-batch" placeholder="e.g., 2022-26" type="text" />
+          <button class="primary-btn" onclick="visualizeFees()">
+            Visualize Data
+          </button>
+        </div>
+        <div class="grid-2-col" id="fee-visuals" style="display: none">
+          <div class="card center-content">
+            <h3>Payment Status</h3>
+            <div class="pie-chart" onclick="showDefaulters()">
+              <div class="pie-segment"></div>
+              <div class="pie-center">85% Paid</div>
+            </div>
+            <div class="chart-legend">
+              <span class="legend-dot green"></span> Paid
+              <span class="legend-dot red"></span> Pending
+            </div>
+            <p style="font-size: 0.8rem; color: #666; margin-top: 10px">
+              (Click chart to view pending list)
+            </p>
+          </div>
+          <div class="card" id="defaulter-list" style="display: none">
+            <h3>Pending Fee List</h3>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Roll No</th>
+                  <th>Name</th>
+                  <th>Due Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>22B81A0505</td>
+                  <td>Rohan Das</td>
+                  <td style="color: #c0392b">₹ 25,000</td>
+                </tr>
+                <tr>
+                  <td>22B81A0512</td>
+                  <td>Kavya S</td>
+                  <td style="color: #c0392b">₹ 10,000</td>
+                </tr>
+                <tr>
+                  <td>22B81A0540</td>
+                  <td>Amit V</td>
+                  <td style="color: #c0392b">₹ 45,000</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="../js/main.js"></script>
+    <script src="../js/hod.js"></script>
+  </body>
+</html>

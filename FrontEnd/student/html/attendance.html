@@ -1,0 +1,113 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Attendance - SIH25103</title>
+    <link href="../../style.css" rel="stylesheet" />
+    <link href="../css/components.css" rel="stylesheet" />
+    <link href="../css/attendance.css" rel="stylesheet" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="sidebar-container"></div>
+    <div class="main-content">
+      <div id="header-container"></div>
+      <div class="dashboard-wrapper">
+        <div class="page-header">
+          <h2>Monthly Attendance</h2>
+        </div>
+        <div class="filters-section">
+          <form id="filterForm">
+            <div class="filter-group">
+              <label>Batch</label>
+              <input id="att-batch" name="batch" placeholder="e.g., 2022-2026" type="text" />
+            </div>
+            <div class="filter-group">
+              <label>Month</label>
+              <select id="att-month" name="month">
+                <option value="1">January</option>
+                <option value="2">February</option>
+                <option value="3">March</option>
+                <option value="4">April</option>
+                <option value="5">May</option>
+                <option value="6">June</option>
+                <option value="7">July</option>
+                <option value="8">August</option>
+                <option value="9">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label>Semester</label>
+              <select id="att-semester" name="semester">
+                <option value="1">Sem 1</option>
+                <option value="2">Sem 2</option>
+                <option value="3">Sem 3</option>
+                <option value="4">Sem 4</option>
+                <option value="5">Sem 5</option>
+                <option value="6">Sem 6</option>
+                <option value="7">Sem 7</option>
+                <option value="8">Sem 8</option>
+              </select>
+            </div>
+            <button class="search-btn" onclick="loadAttendance()" type="button">
+              Search
+            </button>
+          </form>
+        </div>
+        <div class="legend-container">
+          <div class="legend-item"><span class="badge p">P</span> Present</div>
+          <div class="legend-item"><span class="badge a">A</span> Absent</div>
+          <div class="legend-item"><span class="badge l">L</span> Leave</div>
+          <div class="legend-item"><span class="badge h">H</span> Holiday</div>
+        </div>
+        <div class="table-wrapper">
+          <table id="attendanceTable">
+            <thead id="tableHead"></thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+
+        <div class="overview-section">
+          <div class="page-header">
+            <h2>Attendance Overview</h2>
+          </div>
+          <div class="overview-grid">
+            <div class="summary-card">
+              <h4>Semester Summary</h4>
+              <div class="summary-row"><span>Total Classes</span><strong id="sem-total">0</strong></div>
+              <div class="summary-row"><span>Attended</span><strong id="sem-attended">0</strong></div>
+              <div class="summary-row"><span>Absent</span><strong id="sem-absent">0</strong></div>
+              <div class="summary-row"><span>Percentage</span><strong id="sem-percent">0%</strong></div>
+              <div class="summary-row"><span>Eligibility</span><strong id="sem-eligible">-</strong></div>
+            </div>
+          </div>
+
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Subject Code</th>
+                  <th>Subject Name</th>
+                  <th>Total Classes</th>
+                  <th>Attended</th>
+                  <th>Percentage</th>
+                </tr>
+              </thead>
+              <tbody id="subject-wise-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="../js/main.js"></script>
+    <script src="../js/attendance.js"></script>
+  </body>
+</html>

@@ -1,0 +1,129 @@
+.page-header {
+  margin-top: 40px;
+  margin-bottom: 25px;
+}
+
+.page-header h2 {
+  color: var(--text-dark);
+  font-weight: 600;
+}
+
+.card {
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  margin-bottom: 25px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+  max-width: 600px;
+}
+
+.card h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: var(--text-dark);
+  font-size: 1.1rem;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+input[type="file"] {
+  display: block;
+  margin-bottom: 20px;
+  padding: 10px;
+  border: 1px dashed #ccc;
+  background: #fafafa;
+  width: 100%;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+input[type="text"],
+input[type="number"] {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+input:focus {
+  border-color: var(--primary-color);
+  outline: none;
+}
+
+button {
+  background-color: var(--text-dark);
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+button:hover {
+  background-color: var(--primary-color);
+}
+
+.card {
+  transition:
+    box-shadow 0.3s ease,
+    transform 0.2s ease;
+  will-change: box-shadow, transform;
+}
+
+.card:hover {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  transform: translateY(-3px);
+}
+
+input[type="text"],
+input[type="number"],
+input[type="file"] {
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+  will-change: border-color, box-shadow;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="file"]:focus {
+  box-shadow: 0 0 8px var(--primary-color);
+}
+
+button {
+  transition:
+    background-color 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.2s ease;
+  will-change: background-color, box-shadow, transform;
+}
+
+button:hover {
+  box-shadow: 0 6px 18px rgba(13, 71, 161, 0.3);
+  transform: scale(1.05);
+}

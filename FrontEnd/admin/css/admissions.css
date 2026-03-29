@@ -1,0 +1,138 @@
+.page-header {
+  margin-top: 40px;
+  margin-bottom: 25px;
+}
+
+.page-header h2 {
+  color: var(--text-dark);
+  font-weight: 600;
+}
+
+.card {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 30px;
+  margin-bottom: 25px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+}
+
+.card h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: var(--text-dark);
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card p {
+  color: #666;
+  font-size: 0.95rem;
+  margin-bottom: 20px;
+}
+
+.upload-area {
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  padding: 40px;
+  text-align: center;
+  background-color: #fafafa;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+
+.upload-area:hover {
+  border-color: var(--primary-color);
+  background-color: #f0f7ff;
+}
+
+.upload-area i {
+  font-size: 3rem;
+  color: #bbb;
+  margin-bottom: 15px;
+}
+
+.upload-area p {
+  margin: 0;
+  color: #555;
+  font-size: 1rem;
+}
+
+.clickable {
+  color: var(--primary-color);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+#file-name {
+  display: block;
+  margin-top: 10px;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.primary-btn {
+  background-color: var(--text-dark);
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: background 0.3s;
+}
+
+.primary-btn:hover {
+  background-color: var(--primary-color);
+}
+
+.status-box {
+  background: #1e1e1e;
+  color: #00ff00;
+  padding: 15px;
+  border-radius: 6px;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.9rem;
+  min-height: 50px;
+}
+
+.card {
+  transition:
+    box-shadow 0.3s ease,
+    transform 0.3s ease;
+  will-change: box-shadow, transform;
+}
+.card:hover {
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+  transform: translateY(-3px);
+}
+
+.upload-area {
+  transition:
+    border-color 0.3s ease,
+    background-color 0.3s ease,
+    box-shadow 0.3s ease;
+  will-change: border-color, background-color, box-shadow;
+}
+.upload-area:hover {
+  box-shadow: 0 0 12px rgba(13, 71, 161, 0.15);
+}
+
+.primary-btn {
+  transition:
+    background-color 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.2s ease;
+  will-change: background-color, box-shadow, transform;
+}
+.primary-btn:hover {
+  box-shadow: 0 6px 14px rgba(13, 71, 161, 0.3);
+  transform: scale(1.05);
+  background-color: var(--primary-color);
+}
