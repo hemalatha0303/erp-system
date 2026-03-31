@@ -8,6 +8,7 @@ pydantic
 python-dotenv
 openpyxl
 pandas
+numpy
 cryptography
 multipart
 python-multipart
@@ -15,3 +16,4 @@ joblib
 shap
 scikit-learn
 xgboost
+requests
