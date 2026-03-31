@@ -13,16 +13,20 @@ const API_URL = (() => {
     return stored;
   }
   
+  // Production Railway backend URL
+  const isProduction = window.location.hostname === 'erp-system.hemalatha0303.workers.dev' || 
+                       window.location.hostname.includes('pages.dev');
+  if (isProduction) {
+    return 'https://erp-system-production-4ede.up.railway.app';
+  }
+  
   // Default for local development
   const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-  return isDev ? 'http://127.0.0.1:8000' : '';
+  return isDev ? 'http://127.0.0.1:8000' : 'https://erp-system-production-4ede.up.railway.app';
 })();
 
-// Validate API_URL is set
-if (!API_URL) {
-  console.warn('⚠️ API_URL not configured. Backend calls will fail.');
-  console.warn('Set VITE_API_URL environment variable in Cloudflare Pages settings.');
-}
+console.log('✅ API Configuration loaded');
+console.log('Backend URL:', API_URL);
 
 // Export for use in modules
 if (typeof module !== 'undefined' && module.exports) {
