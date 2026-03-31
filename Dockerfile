@@ -4,11 +4,13 @@ WORKDIR /app
 
 RUN apt-get update && apt-get install -y gcc && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt .
+# Copy requirements from Backend
+COPY Backend/requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+# Copy Backend code
+COPY Backend/ .
 
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONPATH=/app
