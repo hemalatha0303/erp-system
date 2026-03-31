@@ -35,6 +35,24 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+app = FastAPI(title="ERP System", version="1.0.0")
+
+# CORS Configuration
+CORS_ORIGINS = os.getenv("CORS_ORIGINS", "http://localhost:3000").split(",")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=CORS_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(auth_router)
 app.include_router(student_router)

@@ -244,6 +244,28 @@ async function lookupStudent() {
 }
 
 // --- 2. Batch Analytics (Table + Charts) ---
+
+async function fetchStudentRisk(rollNo, semester = 1) {
+  const token = localStorage.getItem("token");
+  try {
+    const response = await fetch(
+      `${API_BASE}/ai/aews/student-risk/${encodeURIComponent(rollNo)}?semester=${semester}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    if (!response.ok) {
+      return null;
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching risk:", error);
+    return null;
+  }
+}
+
 async function fetchStudentAnalytics() {
   const batch = document.getElementById("st-batch").value.trim();
   const branch = document.getElementById("st-branch").value;
@@ -258,7 +280,7 @@ async function fetchStudentAnalytics() {
   // Show sections
   table.style.display = "block";
   tbody.innerHTML =
-    "<tr><td colspan='6' style='text-align:center;'>Fetching Data...</td></tr>";
+    "<tr><td colspan='7' style='text-align:center;'>Fetching Data...</td></tr>";
 
   try {
     const params = new URLSearchParams();
@@ -280,7 +302,7 @@ async function fetchStudentAnalytics() {
 
       if (data.length === 0) {
         tbody.innerHTML =
-          "<tr><td colspan='6' style='text-align:center;'>No data found for this batch.</td></tr>";
+          "<tr><td colspan='7' style='text-align:center;'>No data found for this batch.</td></tr>";
         chartContainer.style.display = "none";
         return;
       }
@@ -295,23 +317,31 @@ async function fetchStudentAnalytics() {
                         <td>${s.m2}</td>
                         <td>${s.att}</td>
                         <td>${s.ph || "-"}</td>
+                        <td>
+                          <button class="risk-btn" data-roll-no="${s.roll}" data-name="${s.name}">
+                            <i class="fas fa-heartbeat"></i> Check
+                          </button>
+                        </td>
                     </tr>
                 `;
         tbody.innerHTML += row;
       });
+
+      // Bind risk button handlers
+      bindRiskButtons(tbody);
 
       // B. Render Charts
       chartContainer.style.display = "grid";
       renderCharts(data);
     } else {
       tbody.innerHTML =
-        "<tr><td colspan='6' style='color:red; text-align:center;'>Failed to fetch data</td></tr>";
+        "<tr><td colspan='7' style='color:red; text-align:center;'>Failed to fetch data</td></tr>";
       chartContainer.style.display = "none";
     }
   } catch (error) {
     console.error(error);
     tbody.innerHTML =
-      "<tr><td colspan='6' style='color:red; text-align:center;'>Network Error</td></tr>";
+      "<tr><td colspan='7' style='color:red; text-align:center;'>Network Error</td></tr>";
     chartContainer.style.display = "none";
   }
 }
@@ -455,6 +485,157 @@ window.onclick = function(event) {
   if (event.target == modal) {
       closeAlertModal();
   }
+
+  const riskModal = document.getElementById("riskModal");
+  if (riskModal && event.target === riskModal) {
+    closeRiskModal();
+  }
+}
+
+// ===================================
+// RISK ASSESSMENT FUNCTIONS
+// ===================================
+
+let currentRiskData = null;
+
+function bindRiskButtons(tableBody) {
+  tableBody.addEventListener("click", async (event) => {
+    const btn = event.target.closest(".risk-btn");
+    if (!btn) return;
+
+    const rollNo = btn.getAttribute("data-roll-no");
+    const name = btn.getAttribute("data-name");
+
+    await showRiskAssessment(rollNo, name);
+  });
+}
+
+async function showRiskAssessment(rollNo, studentName) {
+  const modal = document.getElementById("riskModal");
+  if (!modal) return;
+
+  // Show loading state
+  document.getElementById("risk-student-name").textContent = studentName;
+  document.getElementById("risk-level-container").innerHTML = '<div style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Loading risk assessment...</div>';
+  document.getElementById("risk-explanation").textContent = "";
+  document.getElementById("risk-factors").innerHTML = "";
+  modal.style.display = "flex";
+
+  try {
+    const semester = 1; // Default semester, can be made dynamic
+    const riskData = await fetchStudentRisk(rollNo, semester);
+
+    if (!riskData || riskData.status !== "success") {
+      document.getElementById("risk-level-container").innerHTML = `<div style="color:red;"><i class="fas fa-exclamation-circle"></i> Could not fetch risk data</div>`;
+      return;
+    }
+
+    currentRiskData = riskData;
+    populateRiskModal(riskData);
+  } catch (error) {
+    console.error("Error loading risk assessment:", error);
+    document.getElementById("risk-level-container").innerHTML = `<div style="color:red;"><i class="fas fa-exclamation-circle"></i> Error loading data</div>`;
+  }
+}
+
+function populateRiskModal(riskData) {
+  const rollNo = riskData.roll_no || "N/A";
+  const studentName = riskData.student_name || "Student";
+  const riskLevel = riskData.risk_level || "UNKNOWN";
+  const probability = riskData.risk_probability || 0;
+  const explanation = riskData.explanation || "No explanation available";
+  const factors = riskData.factors || {};
+
+  // Update student name
+  document.getElementById("risk-student-name").textContent = `${studentName} (${rollNo})`;
+
+  // Update risk level badge
+  let bgColor = "#388e3c"; // GREEN
+  let textColor = "#fff";
+  let icon = "fa-check-circle";
+
+  if (riskLevel === "HIGH") {
+    bgColor = "#d32f2f"; // RED
+    icon = "fa-exclamation-circle";
+  } else if (riskLevel === "MEDIUM") {
+    bgColor = "#f57c00"; // ORANGE
+    icon = "fa-exclamation-triangle";
+  }
+
+  const badgeHtml = `<div style="padding:10px 16px; border-radius:20px; font-weight:600; background:${bgColor}; color:#fff; display:inline-block;">
+    <i class="fas ${icon}" style="margin-right:8px;"></i>${riskLevel}
+  </div>`;
+  
+  document.getElementById("risk-level-container").innerHTML = `<label style="display:block; font-weight:600; margin-bottom:8px; color:#555;">Risk Level:</label>
+    <div style="display:flex; align-items:center; gap:10px;">
+      ${badgeHtml}
+      <span id="risk-probability" style="font-size:18px; font-weight:600; color:#333;">${probability}% failure risk</span>
+    </div>`;
+
+  // Update explanation
+  document.getElementById("risk-explanation").textContent = explanation;
+
+  // Update factors breakdown
+  let factorsHtml = `
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+      <div style="padding:8px; background:#fff; border-left: 4px solid #0d47a1; border-radius:4px;">
+        <div style="font-size:12px; color:#999;">Attendance</div>
+        <div style="font-size:16px; font-weight:600; color:#333;">${factors.attendance || 0}%</div>
+      </div>
+      <div style="padding:8px; background:#fff; border-left: 4px solid #0d47a1; border-radius:4px;">
+        <div style="font-size:12px; color:#999;">Backlogs</div>
+        <div style="font-size:16px; font-weight:600; color:#333;">${factors.backlogs || 0}</div>
+      </div>
+      <div style="padding:8px; background:#fff; border-left: 4px solid #0d47a1; border-radius:4px;">
+        <div style="font-size:12px; color:#999;">Prev SGPA</div>
+        <div style="font-size:16px; font-weight:600; color:#333;">${factors.previous_sgpa || 0}/10</div>
+      </div>
+      <div style="padding:8px; background:#fff; border-left: 4px solid #0d47a1; border-radius:4px;">
+        <div style="font-size:12px; color:#999;">Mid Score Avg</div>
+        <div style="font-size:16px; font-weight:600; color:#333;">${factors.mid_score_average || 0}/30</div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById("risk-factors").innerHTML = factorsHtml;
+}
+
+function closeRiskModal() {
+  const modal = document.getElementById("riskModal");
+  if (modal) {
+    modal.style.display = "none";
+  }
+}
+
+async function sendAlertFromRisk() {
+  if (!currentRiskData) {
+    alert("No risk data available");
+    return;
+  }
+
+  // Pre-fill the alert modal with risk-specific data
+  const rollNo = currentRiskData.roll_no;
+  const studentName = currentRiskData.student_name;
+  const riskLevel = currentRiskData.risk_level;
+  const probability = currentRiskData.risk_probability;
+
+  // Close risk modal and open alert modal
+  closeRiskModal();
+
+  // Populate alert modal
+  document.getElementById("alert-target-roll").value = rollNo || "N/A";
+  document.getElementById("alert-title").value = `Academic Risk Alert - ${riskLevel} Risk (${probability}%)`;
+  document.getElementById("alert-message").value = `
+Student Analysis:
+- Risk Level: ${riskLevel}
+- Failure Probability: ${probability}%
+- Analysis: ${currentRiskData.explanation}
+
+Please review and contact the student if necessary to provide academic support.
+  `;
+  document.getElementById("alert-severity").value = riskLevel === "HIGH" ? "CRITICAL" : "WARNING";
+
+  document.getElementById("alertModal").style.display = "flex";
 }
 
 document.addEventListener("DOMContentLoaded", () => {

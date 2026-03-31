@@ -19,4 +19,13 @@ SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "your_app_password")
 SENDER_EMAIL = os.getenv("SENDER_EMAIL", "your_email@gmail.com")
 
 # Password Reset Link Base URL
-PASSWORD_RESET_BASE_URL = os.getenv("PASSWORD_RESET_BASE_URL", "http://localhost:3000/reset-password.html")
+PASSWORD_RESET_BASE_URL = os.getenv("PASSWORD_RESET_BASE_URL", "http://localhost:3000/reset-password.html") 
+
+
+
+# CORS
+CORS_ORIGINS = os.getenv("CORS_ORIGINS", "http://localhost:3000").split(",")
+
+if not JWT_SECRET or JWT_SECRET == "your-default-secret-key":
+    import warnings
+    warnings.warn("⚠️ JWT_SECRET not set! Using default value - NOT SECURE FOR PRODUCTION")
