@@ -1,3 +1,4 @@
+const API_BASE = typeof API_URL !== "undefined" ? API_URL : "http://127.0.0.1:8000";
 function toggleBatchInput() {
   const target = document.getElementById("n-target").value;
   const batchGroup = document.getElementById("batch-group");
@@ -17,7 +18,7 @@ async function sendNotification() {
   };
 
   try {
-    const response = await fetch("http://127.0.0.1:8000/admin/notifications", {
+    const response = await fetch(`${API_BASE}/admin/notifications`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,

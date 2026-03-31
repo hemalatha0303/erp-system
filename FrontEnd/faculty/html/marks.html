@@ -1,0 +1,77 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Marks | Faculty</title>
+    <link href="../../style.css" rel="stylesheet" />
+    <link href="../css/components.css" rel="stylesheet" />
+    <link href="../css/faculty.css" rel="stylesheet" />
+    <link href="../css/marks.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="sidebar-container"></div>
+    <div class="main-content">
+      <div id="header-container"></div>
+      <div class="dashboard-wrapper">
+        <div class="page-header">
+          <h2><i class="fas fa-layer-group"></i> Marks</h2>
+        </div>
+        <div class="card" style="padding:16px;">
+<div class="form-group">
+  <label for="mk-batch">Mk Batch</label>
+  <select id="mk-batch">
+    <option value="">Select</option>
+  </select>
+</div>
+<div class="form-group">
+  <label for="mk-branch">Mk Branch</label>
+  <select id="mk-branch">
+    <option value="">Select</option>
+  </select>
+</div>
+<div class="form-group">
+  <label>Mk List</label>
+  <div id="mk-list" class="profile-display"></div>
+</div>
+<div class="form-group">
+  <label for="mk-sec">Mk Sec</label>
+  <select id="mk-sec">
+    <option value="">Select</option>
+  </select>
+</div>
+<div class="form-group">
+  <label for="mk-sem">Mk Sem</label>
+  <select id="mk-sem">
+    <option value="">Select</option>
+  </select>
+</div>
+<div class="form-group">
+  <label for="mk-sub">Mk Sub</label>
+  <input id="mk-sub" type="text" />
+</div>
+<div class="form-group">
+  <label for="mk-summary">Mk Summary</label>
+  <input id="mk-summary" type="text" />
+</div>
+<div class="form-group">
+  <label for="mk-upload-file">Mk Upload File</label>
+  <input id="mk-upload-file" type="file" />
+</div>
+</div>
+<div class="card table-card">
+  <table class="data-table">
+    <tbody id="mk-table-container"></tbody>
+  </table>
+</div>
+      </div>
+    </div>
+
+    
+
+    <script src="../../config.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/marks.js"></script>
+  </body>
+</html>

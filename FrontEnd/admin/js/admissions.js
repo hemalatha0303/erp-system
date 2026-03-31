@@ -1,3 +1,4 @@
+const API_BASE = typeof API_URL !== "undefined" ? API_URL : "http://127.0.0.1:8000";
 // File template information for different user types
 const fileTemplates = {
   STUDENT: "roll_no, email, first_name, last_name, personal_email, gender, residence_type, mobile_no, parent_mobile_no, branch, section, batch, course, quota, admission_date, address, parent_name",
@@ -107,7 +108,7 @@ async function uploadUsers() {
 
   try {
     const response = await fetch(
-      `http://127.0.0.1:8000/admin/upload-students?role=${userType}`,
+      `${API_BASE}/admin/upload-students?role=${userType}`,
       {
         method: "POST",
         headers: {

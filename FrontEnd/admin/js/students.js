@@ -1,3 +1,4 @@
+const API_BASE = typeof API_URL !== "undefined" ? API_URL : "http://127.0.0.1:8000";
 let currentRecords = [];
 let currentUserType = "STUDENT";
 
@@ -75,15 +76,15 @@ async function filterRecords() {
     if (currentUserType === "STUDENT") {
       const dept = document.getElementById("deptFilter").value;
       const year = document.getElementById("yearFilter").value;
-      url = `http://127.0.0.1:8000/admin/students?branch=${dept}&year=${year}&_cache_bust=${Date.now()}`;
+      url = `${API_BASE}/admin/students?branch=${dept}&year=${year}&_cache_bust=${Date.now()}`;
       if (search) url += `&search=${search}`;
     } else if (currentUserType === "FACULTY") {
       const branch = document.getElementById("branchFilter").value;
-      url = `http://127.0.0.1:8000/admin/faculty?branch=${branch}`;
+      url = `${API_BASE}/admin/faculty?branch=${branch}`;
       if (search) url += `&search=${search}`;
     } else if (currentUserType === "HOD") {
       const branch = document.getElementById("branchFilter").value;
-      url = `http://127.0.0.1:8000/admin/hods?branch=${branch}`;
+      url = `${API_BASE}/admin/hods?branch=${branch}`;
       if (search) url += `&search=${search}`;
     }
 

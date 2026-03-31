@@ -1,3 +1,4 @@
+const API_BASE = typeof API_URL !== "undefined" ? API_URL : "http://127.0.0.1:8000";
 document.addEventListener("DOMContentLoaded", () => {
   updateLibraryView();
 });
@@ -19,7 +20,7 @@ async function updateLibraryView() {
 
   try {
     const response = await fetch(
-      `http://127.0.0.1:8000/library/student/books?semester=${semester}`,
+      `${API_BASE}/library/student/books?semester=${semester}`,
       {
         method: "GET",
         headers: {

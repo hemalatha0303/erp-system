@@ -1,3 +1,4 @@
+const API_BASE = typeof API_URL !== "undefined" ? API_URL : "http://127.0.0.1:8000";
 document.addEventListener("DOMContentLoaded", () => {
   // Set Date
   const options = {
@@ -22,7 +23,7 @@ async function loadProfile() {
     }
 
     // Corrected Route: /hod/profile
-    const response = await fetch("http://127.0.0.1:8000/hod/profile", {
+    const response = await fetch(`${API_BASE}/hod/profile`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,

@@ -1,0 +1,94 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Faculty | Hod</title>
+    <link href="../../style.css" rel="stylesheet" />
+    <link href="../css/components.css" rel="stylesheet" />
+    <link href="../css/hod.css" rel="stylesheet" />
+    <link href="../css/faculty.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="sidebar-container"></div>
+    <div class="main-content">
+      <div id="header-container"></div>
+      <div class="dashboard-wrapper">
+        <div class="page-header">
+          <h2><i class="fas fa-layer-group"></i> Faculty</h2>
+        </div>
+        <div class="card" style="padding:16px;">
+<div class="form-group">
+  <label for="alert-faculty-email">Alert Faculty Email</label>
+  <input id="alert-faculty-email" type="text" />
+</div>
+<div class="form-group">
+  <label>Alert Faculty Message</label>
+  <div id="alert-faculty-message" class="profile-display"></div>
+</div>
+<div class="form-group">
+  <label for="alert-faculty-priority">Alert Faculty Priority</label>
+  <select id="alert-faculty-priority">
+    <option value="">Select</option>
+  </select>
+</div>
+<div class="form-group">
+  <label for="alert-faculty-title">Alert Faculty Title</label>
+  <input id="alert-faculty-title" type="text" />
+</div>
+<div class="form-group">
+  <label for="all-faculty-view">All Faculty View</label>
+  <input id="all-faculty-view" type="text" />
+</div>
+<div class="form-group">
+  <label for="d-address">D Address</label>
+  <input id="d-address" type="text" />
+</div>
+<div class="form-group">
+  <label for="d-desig">D Desig</label>
+  <input id="d-desig" type="text" />
+</div>
+<div class="form-group">
+  <label for="d-email">D Email</label>
+  <input id="d-email" type="text" />
+</div>
+<div class="form-group">
+  <label for="d-exp">D Exp</label>
+  <input id="d-exp" type="text" />
+</div>
+<div class="form-group">
+  <label for="d-id">D Id</label>
+  <input id="d-id" type="text" />
+</div>
+<div class="form-group">
+  <label for="d-mobile">D Mobile</label>
+  <input id="d-mobile" type="text" />
+</div>
+<div class="form-group">
+  <label for="d-name">D Name</label>
+  <input id="d-name" type="text" />
+</div>
+<div class="form-group">
+  <label for="fac-email-search">Fac Email Search</label>
+  <input id="fac-email-search" type="text" />
+</div>
+<div class="form-group">
+  <label>Faculty List</label>
+  <div id="faculty-list" class="profile-display"></div>
+</div>
+<div class="form-group">
+  <label for="single-faculty-view">Single Faculty View</label>
+  <input id="single-faculty-view" type="text" />
+</div>
+</div>
+      </div>
+    </div>
+
+    <div id="facultyAlertModal" class="modal" style="display:none;"></div>
+
+    <script src="../../config.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/faculty.js"></script>
+  </body>
+</html>

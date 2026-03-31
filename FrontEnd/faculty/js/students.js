@@ -1,3 +1,4 @@
+const API_BASE = typeof API_URL !== "undefined" ? API_URL : "http://127.0.0.1:8000";
 let allStudentsCache = [];
 let alertHandlerBound = false;
 
@@ -343,7 +344,7 @@ async function sendStudentAlert() {
   };
 
   try {
-    const response = await fetch("http://127.0.0.1:8000/faculty/notifications", {
+    const response = await fetch(`${API_BASE}/faculty/notifications`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

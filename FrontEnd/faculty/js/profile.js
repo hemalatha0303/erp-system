@@ -1,3 +1,4 @@
+const API_BASE = typeof API_URL !== "undefined" ? API_URL : "http://127.0.0.1:8000";
 document.addEventListener("DOMContentLoaded", () => {
   loadProfile();
 });
@@ -10,7 +11,7 @@ async function loadProfile() {
   }
 
   try {
-    const res = await fetch("http://127.0.0.1:8000/faculty/get-profile", {
+    const res = await fetch(`${API_BASE}/faculty/get-profile`, {
       headers: { Authorization: `Bearer ${token}` },
     });
 

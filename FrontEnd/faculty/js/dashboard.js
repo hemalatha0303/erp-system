@@ -1,3 +1,4 @@
+const API_BASE = typeof API_URL !== "undefined" ? API_URL : "http://127.0.0.1:8000";
 document.addEventListener("DOMContentLoaded", () => {
   loadProfile();
   loadTimetable();
@@ -7,7 +8,7 @@ async function loadProfile() {
   try {
     const token = localStorage.getItem("token");
 
-    const response = await fetch("http://127.0.0.1:8000/faculty/get-profile", {
+    const response = await fetch(`${API_BASE}/faculty/get-profile`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -39,7 +40,7 @@ async function loadTimetable() {
   try {
     const token = localStorage.getItem("token");
 
-    const response = await fetch("http://127.0.0.1:8000/faculty/timetable", {
+    const response = await fetch(`${API_BASE}/faculty/timetable`, {
       headers: { Authorization: `Bearer ${token}` },
     });
 

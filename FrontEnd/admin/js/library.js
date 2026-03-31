@@ -1,3 +1,4 @@
+const API_BASE = typeof API_URL !== "undefined" ? API_URL : "http://127.0.0.1:8000";
 document.addEventListener("DOMContentLoaded", () => {
   const today = new Date().toISOString().split("T")[0];
 
@@ -28,7 +29,7 @@ async function uploadBooks() {
   formData.append("file", fileInput.files[0]);
 
   try {
-    const res = await fetch("http://127.0.0.1:8000/library/books/upload", {
+    const res = await fetch(`${API_BASE}/library/books/upload`, {
       method: "POST",
       headers: { Authorization: "Bearer " + localStorage.getItem("token") },
       body: formData,
@@ -68,7 +69,7 @@ async function issueBooks() {
   };
 
   try {
-    const res = await fetch("http://127.0.0.1:8000/library/issue", {
+    const res = await fetch(`${API_BASE}/library/issue`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -103,7 +104,7 @@ async function fetchPendingBooks() {
 
   try {
     const res = await fetch(
-      `http://127.0.0.1:8000/library/pending?srno=${srno}&semester=${sem}`,
+      `${API_BASE}/library/pending?srno=${srno}&semester=${sem}`,
       {
         headers: { Authorization: "Bearer " + localStorage.getItem("token") },
       },
@@ -159,7 +160,7 @@ async function returnBooks() {
   };
 
   try {
-    const res = await fetch("http://127.0.0.1:8000/library/return", {
+    const res = await fetch(`${API_BASE}/library/return`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -190,8 +191,8 @@ async function fetchBookCatalog() {
 
   try {
     const url = search
-      ? `http://127.0.0.1:8000/library/books?search=${search}`
-      : "http://127.0.0.1:8000/library/books";
+      ? `${API_BASE}/library/books?search=${search}`
+      : `${API_BASE}/library/books`;
 
     const res = await fetch(url, {
       headers: { Authorization: "Bearer " + localStorage.getItem("token") },

@@ -33,12 +33,49 @@ app.mount(
     name="uploads",
 )
 
+def _parse_bool(value: str) -> bool:
+    return str(value).strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _build_cors_settings():
+    default_origins = [
+        "http://localhost:3000",
+        "http://127.0.0.1:8080",
+        "http://localhost:8080",
+    ]
+
+    origins_env = os.getenv("CORS_ORIGINS", "")
+    allow_all = _parse_bool(os.getenv("CORS_ALLOW_ALL", "false"))
+    origin_regex = os.getenv("CORS_ORIGIN_REGEX", "")
+
+    origins = [o.strip() for o in origins_env.split(",") if o.strip()] or default_origins
+
+    # Allow all origins explicitly only when requested (credentials must be false with wildcard)
+    if allow_all:
+        return {
+            "allow_origins": ["*"],
+            "allow_origin_regex": None,
+            "allow_credentials": False,
+        }
+
+    # Default regex allows Cloudflare Pages/Workers origins without needing explicit entries
+    if not origin_regex:
+        origin_regex = r"https://.*\.pages\.dev|https://.*\.workers\.dev"
+
+    return {
+        "allow_origins": origins,
+        "allow_origin_regex": origin_regex,
+        "allow_credentials": True,
+    }
+
+
 # Configure CORS
-CORS_ORIGINS = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:8080,http://localhost:8080").split(",")
+cors_settings = _build_cors_settings()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=CORS_ORIGINS,
-    allow_credentials=True,
+    allow_origins=cors_settings["allow_origins"],
+    allow_origin_regex=cors_settings["allow_origin_regex"],
+    allow_credentials=cors_settings["allow_credentials"],
     allow_methods=["*"],
     allow_headers=["*"],
 )

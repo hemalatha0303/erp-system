@@ -1,3 +1,4 @@
+const API_BASE = typeof API_URL !== "undefined" ? API_URL : "http://127.0.0.1:8000";
 document.addEventListener("DOMContentLoaded", () => {
   fetchNotifications();
 });
@@ -12,8 +13,8 @@ async function fetchNotifications() {
   try {
 
     const [notifResponse, alertResponse] = await Promise.all([
-      fetch("http://127.0.0.1:8000/student/notifications", { headers: { Authorization: `Bearer ${token}` } }),
-      fetch("http://127.0.0.1:8000/student/alerts", { headers: { Authorization: `Bearer ${token}` } })
+      fetch(`${API_BASE}/student/notifications`, { headers: { Authorization: `Bearer ${token}` } }),
+      fetch(`${API_BASE}/student/alerts`, { headers: { Authorization: `Bearer ${token}` } })
     ]);
 
     let combinedData = [];

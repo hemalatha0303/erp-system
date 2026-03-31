@@ -1,3 +1,4 @@
+const API_BASE = typeof API_URL !== "undefined" ? API_URL : "http://127.0.0.1:8000";
 async function createFeeStructure() {
   const payload = {
     year: parseInt(document.getElementById("fs-year").value),
@@ -14,7 +15,7 @@ async function createFeeStructure() {
   }
 
   try {
-    const res = await fetch("http://127.0.0.1:8000/admin/fee-structure", {
+    const res = await fetch(`${API_BASE}/admin/fee-structure`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -47,7 +48,7 @@ async function fetchPaymentDetails() {
   resultsDiv.innerHTML = "<p style='text-align:center;'>Loading data...</p>";
 
   try {
-    const res = await fetch(`http://127.0.0.1:8000/payments/payment/${roll}`, {
+    const res = await fetch(`${API_BASE}/payments/payment/${roll}`, {
       headers: { Authorization: "Bearer " + localStorage.getItem("token") },
     });
 
@@ -365,7 +366,7 @@ async function updatePayment() {
   };
 
   try {
-    const res = await fetch("http://127.0.0.1:8000/payments/payment/update", {
+    const res = await fetch(`${API_BASE}/payments/payment/update`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

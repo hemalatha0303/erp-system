@@ -1,3 +1,4 @@
+const API_BASE = typeof API_URL !== "undefined" ? API_URL : "http://127.0.0.1:8000";
 function toggleTimetableInputs() {
   const type = document.getElementById("tt-type").value;
   const classInputs = document.querySelectorAll(".class-only");
@@ -62,7 +63,7 @@ async function uploadTimetable() {
 
   try {
     const token = localStorage.getItem("token");
-    const res = await fetch("http://127.0.0.1:8000/hod/timetable/upload", {
+    const res = await fetch(`${API_BASE}/hod/timetable/upload`, {
       method: "POST",
       headers: { Authorization: "Bearer " + token },
       body: formData,

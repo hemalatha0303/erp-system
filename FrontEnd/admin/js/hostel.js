@@ -1,3 +1,4 @@
+const API_BASE = typeof API_URL !== "undefined" ? API_URL : "http://127.0.0.1:8000";
 async function uploadRooms() {
   const fileInput = document.getElementById("roomFile");
 
@@ -10,7 +11,7 @@ async function uploadRooms() {
   formData.append("file", fileInput.files[0]);
 
   try {
-    const res = await fetch("http://127.0.0.1:8000/admin/hostel/rooms/upload", {
+    const res = await fetch(`${API_BASE}/admin/hostel/rooms/upload`, {
       method: "POST",
       headers: {
         Authorization: "Bearer " + localStorage.getItem("token"),
@@ -47,7 +48,7 @@ async function allocateRoom() {
   };
 
   try {
-    const res = await fetch("http://127.0.0.1:8000/admin/hostel/allocate", {
+    const res = await fetch(`${API_BASE}/admin/hostel/allocate`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -86,7 +87,7 @@ async function vacateRoom() {
   };
 
   try {
-    const res = await fetch("http://127.0.0.1:8000/admin/hostel/room/vacate", {
+    const res = await fetch(`${API_BASE}/admin/hostel/room/vacate`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -1,3 +1,4 @@
+const API_BASE = typeof API_URL !== "undefined" ? API_URL : "http://127.0.0.1:8000";
 async function fetchStudentListForAttendance() {
   const batch = document.getElementById("att-batch").value.trim();
   const branch = document.getElementById("att-branch").value;
@@ -25,7 +26,7 @@ async function fetchStudentListForAttendance() {
     });
 
     const res = await fetch(
-      `http://127.0.0.1:8000/faculty/class-students?${queryParams}`,
+      `${API_BASE}/faculty/class-students?${queryParams}`,
       {
         headers: { Authorization: `Bearer ${token}` },
       },
@@ -132,7 +133,7 @@ async function submitAttendance() {
 
   try {
     const response = await fetch(
-      "http://127.0.0.1:8000/faculty/attendance/mark",
+      `${API_BASE}/faculty/attendance/mark`,
       {
         method: "POST",
         headers: {

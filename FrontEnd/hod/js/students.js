@@ -21,7 +21,7 @@ const API_BASE = (() => {
     return `${protocol}//${hostname}:8000`;
   }
 
-  return "http://127.0.0.1:8000";
+  return `${API_BASE}`;
 })();
 
 function escapeHtml(value) {

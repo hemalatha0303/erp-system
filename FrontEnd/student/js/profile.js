@@ -1,3 +1,4 @@
+const API_BASE = typeof API_URL !== "undefined" ? API_URL : "http://127.0.0.1:8000";
 document.addEventListener("DOMContentLoaded", async () => {
   function getAuthHeaders() {
     return {
@@ -6,11 +7,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
   }
   try {
-    const profileRes = await fetch("http://127.0.0.1:8000/student/profile", {
+    const profileRes = await fetch(`${API_BASE}/student/profile`, {
       headers: getAuthHeaders(),
     });
     const academicsRes = await fetch(
-      "http://127.0.0.1:8000/student/my-academics",
+      `${API_BASE}/student/my-academics`,
       {
         headers: getAuthHeaders(),
       },

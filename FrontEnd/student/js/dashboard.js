@@ -1,3 +1,4 @@
+const API_BASE = typeof API_URL !== "undefined" ? API_URL : "http://127.0.0.1:8000";
 document.addEventListener("DOMContentLoaded", () => {
   initDashboard();
   loadTimetable();
@@ -22,7 +23,7 @@ async function initDashboard() {
   }
 
   try {
-    const response = await fetch("http://127.0.0.1:8000/student/dashboard", {
+    const response = await fetch(`${API_BASE}/student/dashboard`, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
@@ -142,7 +143,7 @@ async function loadTimetable() {
   try {
     const token = localStorage.getItem("token");
 
-    const response = await fetch("http://127.0.0.1:8000/student/timetable", {
+    const response = await fetch(`${API_BASE}/student/timetable`, {
       headers: { Authorization: `Bearer ${token}` },
     });
 

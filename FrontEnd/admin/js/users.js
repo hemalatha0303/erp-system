@@ -1,3 +1,4 @@
+const API_BASE = typeof API_URL !== "undefined" ? API_URL : "http://127.0.0.1:8000";
 document.getElementById("drop-zone").addEventListener("click", () => {
   document.getElementById("userFile").click();
 });
@@ -32,7 +33,7 @@ async function bulkUserSignup() {
   try {
     const token = localStorage.getItem("token");
     const res = await fetch(
-      `http://127.0.0.1:8000/admin/accounts/signup-users?role=${role}`,
+      `${API_BASE}/admin/accounts/signup-users?role=${role}`,
       {
         method: "POST",
         headers: {

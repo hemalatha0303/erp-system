@@ -1,3 +1,4 @@
+const API_BASE = typeof API_URL !== "undefined" ? API_URL : "http://127.0.0.1:8000";
 document.addEventListener("DOMContentLoaded", () => {
   if (document.getElementById("fac-name")) {
     loadFacultyDashboard();
@@ -23,7 +24,7 @@ async function loadFacultyDashboard() {
     }
 
     const resProfile = await fetch(
-      "http://127.0.0.1:8000/faculty/get-profile",
+      `${API_BASE}/faculty/get-profile`,
       {
         headers: { Authorization: "Bearer " + token },
       },
@@ -47,7 +48,7 @@ async function loadFacultyDashboard() {
           `${profile.experience || 0} Years`;
     }
 
-    const resTT = await fetch("http://127.0.0.1:8000/faculty/timetable", {
+    const resTT = await fetch(`${API_BASE}/faculty/timetable`, {
       headers: { Authorization: "Bearer " + token },
     });
 

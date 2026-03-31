@@ -1,3 +1,4 @@
+const API_BASE = typeof API_URL !== "undefined" ? API_URL : "http://127.0.0.1:8000";
 async function fetchStudentListForMarks() {
   const batch = document.getElementById("mk-batch").value.trim();
   const sem = document.getElementById("mk-sem").value;
@@ -25,7 +26,7 @@ async function fetchStudentListForMarks() {
     });
 
     const res = await fetch(
-      `http://127.0.0.1:8000/faculty/class-students?${queryParams}`,
+      `${API_BASE}/faculty/class-students?${queryParams}`,
       { headers: { Authorization: `Bearer ${token}` } },
     );
 
@@ -84,7 +85,7 @@ async function fetchStudentMarks(roll, batch, sem, subject) {
 
   try {
     const res = await fetch(
-      "http://127.0.0.1:8000/faculty/internal-marks/get",
+      `${API_BASE}/faculty/internal-marks/get`,
       {
         method: "POST",
         headers: {
@@ -211,7 +212,7 @@ async function submitMarks() {
 
     try {
       const res = await fetch(
-        "http://127.0.0.1:8000/faculty/internal-marks/update",
+        `${API_BASE}/faculty/internal-marks/update`,
         {
           method: "PUT",
           headers: {
@@ -300,7 +301,7 @@ async function uploadMarksExcel() {
   const formData = new FormData();
   formData.append("file", file);
 
-  const url = new URL("http://127.0.0.1:8000/faculty/internal-marks/upload");
+  const url = new URL(`${API_BASE}/faculty/internal-marks/upload`);
   url.searchParams.append("subject_code", subject);
   url.searchParams.append("semester", sem);
   url.searchParams.append("batch", batch);

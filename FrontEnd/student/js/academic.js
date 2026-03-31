@@ -1,3 +1,4 @@
+const API_BASE = typeof API_URL !== "undefined" ? API_URL : "http://127.0.0.1:8000";
 document.addEventListener("DOMContentLoaded", () => {
   updateTable();
 });
@@ -42,7 +43,7 @@ async function updateTable() {
 async function loadInternalMarks(semester, type) {
   semester = Number(semester);
   const year = Math.floor((semester + 1) / 2);
-  const url = `http://127.0.0.1:8000/student/internal-marks/${year}/${semester}`;
+  const url = `${API_BASE}/student/internal-marks/${year}/${semester}`;
   console.log("Fetching URL:", url);
 
   const res = await fetch(url, { headers: getAuthHeaders() });
@@ -111,7 +112,7 @@ async function loadSemesterMarks(semester) {
   const year = Math.floor((semester + 1) / 2);
 
   const res = await fetch(
-    `http://127.0.0.1:8000/student/external-marks/${year}/${semester}`,
+    `${API_BASE}/student/external-marks/${year}/${semester}`,
     { headers: getAuthHeaders() },
   );
 

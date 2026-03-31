@@ -1,3 +1,4 @@
+const API_BASE = typeof API_URL !== "undefined" ? API_URL : "http://127.0.0.1:8000";
 let currentFacultyEmail = null;
 
 function renderFacultyList(data) {
@@ -44,7 +45,7 @@ async function fetchAllFaculty() {
     "<tr><td colspan='5' style='text-align:center; padding:20px;'>Loading...</td></tr>";
 
   try {
-    const res = await fetch("http://127.0.0.1:8000/hod/faculty", {
+    const res = await fetch(`${API_BASE}/hod/faculty`, {
       headers: { Authorization: `Bearer ${token}` },
     });
 
@@ -77,7 +78,7 @@ async function searchFacultyByEmail() {
 
   try {
     if (!query.includes("@")) {
-      const res = await fetch("http://127.0.0.1:8000/hod/faculty", {
+      const res = await fetch(`${API_BASE}/hod/faculty`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -100,7 +101,7 @@ async function searchFacultyByEmail() {
 
     const encodedEmail = encodeURIComponent(query);
     const res = await fetch(
-      `http://127.0.0.1:8000/hod/view/faculty/${encodedEmail}`,
+      `${API_BASE}/hod/view/faculty/${encodedEmail}`,
       {
         headers: { Authorization: `Bearer ${token}` },
       },
@@ -181,7 +182,7 @@ async function sendFacultyAlert() {
   };
 
   try {
-    const res = await fetch("http://127.0.0.1:8000/hod/notifications", {
+    const res = await fetch(`${API_BASE}/hod/notifications`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

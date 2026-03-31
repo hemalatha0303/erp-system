@@ -1,3 +1,4 @@
+const API_BASE = typeof API_URL !== "undefined" ? API_URL : "http://127.0.0.1:8000";
 document.addEventListener("DOMContentLoaded", () => {
   loadHodProfile();
 });
@@ -6,7 +7,7 @@ async function loadHodProfile() {
   const token = localStorage.getItem("token");
 
   try {
-    const res = await fetch("http://127.0.0.1:8000/hod/profile", {
+    const res = await fetch(`${API_BASE}/hod/profile`, {
       headers: { Authorization: `Bearer ${token}` },
     });
 
@@ -45,7 +46,7 @@ async function updateHodProfile() {
   };
 
   try {
-    const res = await fetch("http://127.0.0.1:8000/hod/profile", {
+    const res = await fetch(`${API_BASE}/hod/profile`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

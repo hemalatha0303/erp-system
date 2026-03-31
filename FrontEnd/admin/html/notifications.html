@@ -1,0 +1,74 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Notifications | Admin</title>
+    <link href="../../style.css" rel="stylesheet" />
+    <link href="../css/components.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="sidebar-container"></div>
+    <div class="main-content">
+      <div id="header-container"></div>
+      <div class="dashboard-wrapper">
+        <div class="page-header">
+          <h2><i class="fas fa-layer-group"></i> Notifications</h2>
+        </div>
+        <div class="card" style="padding:16px;">
+<div class="form-group">
+  <label for="batch-group">Batch Group</label>
+  <select id="batch-group">
+    <option value="">Select</option>
+  </select>
+</div>
+<div class="form-group">
+  <label for="n-batch">N Batch</label>
+  <select id="n-batch">
+    <option value="">Select</option>
+  </select>
+</div>
+<div class="form-group">
+  <label for="n-category">N Category</label>
+  <select id="n-category">
+    <option value="">Select</option>
+  </select>
+</div>
+<div class="form-group">
+  <label>N Message</label>
+  <div id="n-message" class="profile-display"></div>
+</div>
+<div class="form-group">
+  <label for="n-priority">N Priority</label>
+  <select id="n-priority">
+    <option value="">Select</option>
+  </select>
+</div>
+<div class="form-group">
+  <label for="n-target">N Target</label>
+  <select id="n-target">
+    <option value="">Select</option>
+  </select>
+</div>
+<div class="form-group">
+  <label for="n-title">N Title</label>
+  <input id="n-title" type="text" />
+</div>
+<form id="notification-form" class="card" style="padding:16px;">
+  <div class="form-group">
+    <label>Notification Form</label>
+    <div>Form container</div>
+  </div>
+</form>
+</div>
+      </div>
+    </div>
+
+    
+
+    <script src="../../config.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/notifications.js"></script>
+  </body>
+</html>

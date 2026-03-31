@@ -1,0 +1,90 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Attendance | Student</title>
+    <link href="../../style.css" rel="stylesheet" />
+    <link href="../css/components.css" rel="stylesheet" />
+    <link href="../css/attendance.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="sidebar-container"></div>
+    <div class="main-content">
+      <div id="header-container"></div>
+      <div class="dashboard-wrapper">
+        <div class="page-header">
+          <h2><i class="fas fa-layer-group"></i> Attendance</h2>
+        </div>
+        <div class="card" style="padding:16px;">
+<div class="form-group">
+  <label for="att-batch">Att Batch</label>
+  <select id="att-batch">
+    <option value="">Select</option>
+  </select>
+</div>
+<div class="form-group">
+  <label for="att-month">Att Month</label>
+  <input id="att-month" type="text" />
+</div>
+<div class="form-group">
+  <label for="att-semester">Att Semester</label>
+  <select id="att-semester">
+    <option value="">Select</option>
+  </select>
+</div>
+<div class="form-group">
+  <label for="sem-absent">Sem Absent</label>
+  <select id="sem-absent">
+    <option value="">Select</option>
+  </select>
+</div>
+<div class="form-group">
+  <label for="sem-attended">Sem Attended</label>
+  <select id="sem-attended">
+    <option value="">Select</option>
+  </select>
+</div>
+<div class="form-group">
+  <label for="sem-eligible">Sem Eligible</label>
+  <select id="sem-eligible">
+    <option value="">Select</option>
+  </select>
+</div>
+<div class="form-group">
+  <label for="sem-percent">Sem Percent</label>
+  <select id="sem-percent">
+    <option value="">Select</option>
+  </select>
+</div>
+<div class="form-group">
+  <label>Sem Total</label>
+  <div id="sem-total" class="profile-display"></div>
+</div>
+</div>
+<div class="card table-card">
+  <table class="data-table">
+    <tbody id="subject-wise-body"></tbody>
+  </table>
+</div>
+<div class="card table-card">
+  <table class="data-table">
+    <tbody id="tableBody"></tbody>
+  </table>
+</div>
+<div class="card table-card">
+  <table class="data-table">
+    <tbody id="tableHead"></tbody>
+  </table>
+</div>
+      </div>
+    </div>
+
+    
+
+    <script src="../../config.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/attendance.js"></script>
+  </body>
+</html>

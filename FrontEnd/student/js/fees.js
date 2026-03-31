@@ -1,3 +1,4 @@
+const API_BASE = typeof API_URL !== "undefined" ? API_URL : "http://127.0.0.1:8000";
 document.addEventListener("DOMContentLoaded", () => {
   updateFeeView();
 });
@@ -20,7 +21,7 @@ async function updateFeeView() {
 
   try {
     const res = await fetch(
-      `http://127.0.0.1:8000/student/payments?semester=${semester}`,
+      `${API_BASE}/student/payments?semester=${semester}`,
       {
         headers: getAuthHeaders(),
       },
@@ -323,7 +324,7 @@ async function submitStudentPayment() {
   };
 
   try {
-    const res = await fetch("http://127.0.0.1:8000/student/payments/submit", {
+    const res = await fetch(`${API_BASE}/student/payments/submit`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

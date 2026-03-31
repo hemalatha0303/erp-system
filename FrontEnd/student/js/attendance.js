@@ -1,3 +1,4 @@
+const API_BASE = typeof API_URL !== "undefined" ? API_URL : "http://127.0.0.1:8000";
 document.addEventListener("DOMContentLoaded", () => {
   const today = new Date();
   document.getElementById("att-month").value = today.getMonth() + 1;
@@ -11,7 +12,7 @@ async function preloadAcademicInfo() {
   if (!token) return;
 
   try {
-    const res = await fetch("http://127.0.0.1:8000/student/my-academics", {
+    const res = await fetch(`${API_BASE}/student/my-academics`, {
       headers: { Authorization: `Bearer ${token}` },
     });
 
@@ -63,7 +64,7 @@ async function loadAttendance() {
     if (batch) params.append("batch", batch);
 
     const response = await fetch(
-      `http://127.0.0.1:8000/student/attendance/monthly?${params.toString()}`,
+      `${API_BASE}/student/attendance/monthly?${params.toString()}`,
       {
         method: "GET",
         headers: {
@@ -233,11 +234,11 @@ async function loadSemesterOverview(semester) {
 
   try {
     const summaryRes = await fetch(
-      `http://127.0.0.1:8000/student/attendance/summary?semester=${semester}`,
+      `${API_BASE}/student/attendance/summary?semester=${semester}`,
       { headers: { Authorization: `Bearer ${token}` } },
     );
     const subjectRes = await fetch(
-      `http://127.0.0.1:8000/student/attendance/subject-wise?semester=${semester}`,
+      `${API_BASE}/student/attendance/subject-wise?semester=${semester}`,
       { headers: { Authorization: `Bearer ${token}` } },
     );
 

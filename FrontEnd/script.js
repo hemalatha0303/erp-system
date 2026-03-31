@@ -108,7 +108,7 @@ document.getElementById("loginForm").addEventListener("submit", function (e) {
       }, 500);
     } catch (err) {
       console.error(err);
-      messageBox.textContent = "Something went wrong";
+      messageBox.textContent = "Network error. Check API URL/CORS.";
       messageBox.style.color = "red";
     }
   };

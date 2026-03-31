@@ -1,3 +1,4 @@
+const API_BASE = typeof API_URL !== "undefined" ? API_URL : "http://127.0.0.1:8000";
 let inboxNotifications = [];
 let inboxLoaded = false;
 
@@ -44,7 +45,7 @@ async function sendFacultyNotification() {
   };
 
   try {
-    const response = await fetch("http://127.0.0.1:8000/faculty/notifications", {
+    const response = await fetch(`${API_BASE}/faculty/notifications`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -79,7 +80,7 @@ async function fetchInboxNotifications() {
   listContainer.innerHTML = `<div style="text-align:center; padding:20px; color:#666;">Loading notifications...</div>`;
 
   try {
-    const response = await fetch("http://127.0.0.1:8000/faculty/notifications", {
+    const response = await fetch(`${API_BASE}/faculty/notifications`, {
       headers: { Authorization: `Bearer ${token}` }
     });
 

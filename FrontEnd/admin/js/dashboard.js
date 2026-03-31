@@ -1,3 +1,4 @@
+const API_BASE = typeof API_URL !== "undefined" ? API_URL : "http://127.0.0.1:8000";
 document.addEventListener("DOMContentLoaded", () => {
   const options = {
     weekday: "long",
@@ -15,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
 async function loadDashboardStats() {
   try {
     const token = localStorage.getItem("token");
-    const res = await fetch("http://127.0.0.1:8000/admin/dashboard/stats", {
+    const res = await fetch(`${API_BASE}/admin/dashboard/stats`, {
       headers: { Authorization: `Bearer ${token}` },
     });
 
@@ -47,7 +48,7 @@ async function loadDashboardStats() {
 async function loadRecentActivity() {
   try {
     const token = localStorage.getItem("token");
-    const res = await fetch("http://127.0.0.1:8000/admin/dashboard/activity", {
+    const res = await fetch(`${API_BASE}/admin/dashboard/activity`, {
       headers: { Authorization: `Bearer ${token}` },
     });
 

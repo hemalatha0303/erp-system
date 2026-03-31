@@ -1,3 +1,4 @@
+const API_BASE = typeof API_URL !== "undefined" ? API_URL : "http://127.0.0.1:8000";
 document.addEventListener("DOMContentLoaded", () => {
   loadHostelData();
 });
@@ -10,7 +11,7 @@ async function loadHostelData() {
   const token = localStorage.getItem("token");
 
   try {
-    const response = await fetch("http://127.0.0.1:8000/student/hostel", {
+    const response = await fetch(`${API_BASE}/student/hostel`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,

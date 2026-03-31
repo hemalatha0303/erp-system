@@ -1,3 +1,4 @@
+const API_BASE = typeof API_URL !== "undefined" ? API_URL : "http://127.0.0.1:8000";
 document.getElementById("resFile").addEventListener("change", function () {
   if (this.files[0])
     document.getElementById("file-name").innerText = this.files[0].name;
@@ -22,7 +23,7 @@ async function uploadResults() {
     const token = localStorage.getItem("token");
 
     const url = new URL(
-      `http://127.0.0.1:8000/admin/external-marks/upload/${batch}/${sem}`
+      `${API_BASE}/admin/external-marks/upload/${batch}/${sem}`
     );
     
     if (branch && branch !== "All") {

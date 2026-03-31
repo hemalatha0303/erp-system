@@ -1,0 +1,179 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Students | Admin</title>
+    <link href="../../style.css" rel="stylesheet" />
+    <link href="../css/components.css" rel="stylesheet" />
+    <link href="../css/students.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="sidebar-container"></div>
+    <div class="main-content">
+      <div id="header-container"></div>
+      <div class="dashboard-wrapper">
+        <div class="page-header">
+          <h2><i class="fas fa-layer-group"></i> Students</h2>
+        </div>
+        <div class="card" style="padding:16px;">
+<div class="form-group">
+  <label for="branchFilter">Branchfilter</label>
+  <select id="branchFilter">
+    <option value="">Select</option>
+  </select>
+</div>
+<div class="form-group">
+  <label for="deptFilter">Deptfilter</label>
+  <select id="deptFilter">
+    <option value="">Select</option>
+  </select>
+</div>
+<div class="form-group">
+  <label for="detail-address">Detail Address</label>
+  <input id="detail-address" type="text" />
+</div>
+<div class="form-group">
+  <label for="detail-admission-date">Detail Admission Date</label>
+  <input id="detail-admission-date" type="date" />
+</div>
+<div class="form-group">
+  <label for="detail-batch">Detail Batch</label>
+  <select id="detail-batch">
+    <option value="">Select</option>
+  </select>
+</div>
+<div class="form-group">
+  <label for="detail-blood">Detail Blood</label>
+  <input id="detail-blood" type="text" />
+</div>
+<div class="form-group">
+  <label for="detail-branch">Detail Branch</label>
+  <select id="detail-branch">
+    <option value="">Select</option>
+  </select>
+</div>
+<div class="form-group">
+  <label for="detail-course">Detail Course</label>
+  <select id="detail-course">
+    <option value="">Select</option>
+  </select>
+</div>
+<div class="form-group">
+  <label for="detail-dob">Detail Dob</label>
+  <input id="detail-dob" type="text" />
+</div>
+<div class="form-group">
+  <label for="detail-email">Detail Email</label>
+  <input id="detail-email" type="text" />
+</div>
+<div class="form-group">
+  <label for="detail-firstname">Detail Firstname</label>
+  <input id="detail-firstname" type="text" />
+</div>
+<div class="form-group">
+  <label for="detail-gender">Detail Gender</label>
+  <input id="detail-gender" type="text" />
+</div>
+<div class="form-group">
+  <label for="detail-lastname">Detail Lastname</label>
+  <input id="detail-lastname" type="text" />
+</div>
+<div class="form-group">
+  <label for="detail-mobile">Detail Mobile</label>
+  <input id="detail-mobile" type="text" />
+</div>
+<div class="form-group">
+  <label for="detail-parent-mobile">Detail Parent Mobile</label>
+  <input id="detail-parent-mobile" type="text" />
+</div>
+<div class="form-group">
+  <label for="detail-parent-name">Detail Parent Name</label>
+  <input id="detail-parent-name" type="text" />
+</div>
+<div class="form-group">
+  <label for="detail-quota">Detail Quota</label>
+  <select id="detail-quota">
+    <option value="">Select</option>
+  </select>
+</div>
+<div class="form-group">
+  <label for="detail-residence">Detail Residence</label>
+  <select id="detail-residence">
+    <option value="">Select</option>
+  </select>
+</div>
+<div class="form-group">
+  <label for="detail-roll">Detail Roll</label>
+  <input id="detail-roll" type="text" />
+</div>
+<div class="form-group">
+  <label for="detail-section">Detail Section</label>
+  <select id="detail-section">
+    <option value="">Select</option>
+  </select>
+</div>
+<div class="form-group">
+  <label for="detail-semester">Detail Semester</label>
+  <select id="detail-semester">
+    <option value="">Select</option>
+  </select>
+</div>
+<div class="form-group">
+  <label for="detail-status">Detail Status</label>
+  <select id="detail-status">
+    <option value="">Select</option>
+  </select>
+</div>
+<div class="form-group">
+  <label for="detail-year">Detail Year</label>
+  <select id="detail-year">
+    <option value="">Select</option>
+  </select>
+</div>
+<div class="form-group">
+  <label for="facultyHodFilters">Facultyhodfilters</label>
+  <input id="facultyHodFilters" type="text" />
+</div>
+<div class="form-group">
+  <label>Records List</label>
+  <div id="records-list" class="profile-display"></div>
+</div>
+<div class="form-group">
+  <label for="searchInput">Searchinput</label>
+  <input id="searchInput" type="text" />
+</div>
+<div class="form-group">
+  <label for="studentFilters">Studentfilters</label>
+  <input id="studentFilters" type="text" />
+</div>
+<div class="form-group">
+  <label for="userTypeSelect">Usertypeselect</label>
+  <select id="userTypeSelect">
+    <option value="">Select</option>
+  </select>
+</div>
+<div class="form-group">
+  <label for="yearFilter">Yearfilter</label>
+  <select id="yearFilter">
+    <option value="">Select</option>
+  </select>
+</div>
+</div>
+<div class="card table-card">
+  <table class="data-table">
+    <tbody id="tableHeaders"></tbody>
+  </table>
+</div>
+      </div>
+    </div>
+
+    <div id="detailsModal" class="modal" style="display:none;"></div>
+    <div id="modalTitle" class="modal" style="display:none;"></div>
+
+    <script src="../../config.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/students.js"></script>
+  </body>
+</html>
