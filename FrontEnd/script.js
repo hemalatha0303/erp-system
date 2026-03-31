@@ -59,7 +59,7 @@ document.getElementById("loginForm").addEventListener("submit", function (e) {
 
   const loggerLogic = async () => {
     try {
-      const res = await fetch("http://127.0.0.1:8000/auth/login", {
+      const res = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -131,7 +131,7 @@ document
     msg.style.color = "blue";
 
     try {
-      const loginRes = await fetch("http://127.0.0.1:8000/auth/login", {
+      const loginRes = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email, password: oldPass }),
@@ -147,7 +147,7 @@ document
       const tempToken = loginData.access_token;
 
       const changeRes = await fetch(
-        "http://127.0.0.1:8000/auth/change-password",
+        `${API_URL}/auth/change-password`,
         {
           method: "POST",
           headers: {
@@ -201,7 +201,7 @@ document
     msg.style.color = "blue";
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/auth/forgot-password", {
+      const res = await fetch(`${API_URL}/auth/forgot-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email }),
@@ -256,7 +256,7 @@ document
     msg.style.color = "blue";
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/auth/reset-password", {
+      const res = await fetch(`${API_URL}/auth/reset-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

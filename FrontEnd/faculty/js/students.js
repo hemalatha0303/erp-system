@@ -9,7 +9,7 @@ async function fetchStudentList() {
   }
 
   try {
-    const response = await fetch("http://127.0.0.1:8000/faculty/student-list", {
+    const response = await fetch(`${API_URL}/faculty/student-list`, {
       method: "GET",
       headers: { 
         Authorization: `Bearer ${token}`,
@@ -115,7 +115,7 @@ async function fetchStudentRisk(rollNo, semester = 1) {
   const token = localStorage.getItem("token");
   try {
     const response = await fetch(
-      `http://127.0.0.1:8000/ai/aews/student-risk/${encodeURIComponent(rollNo)}?semester=${semester}`,
+      `${API_URL}/ai/aews/student-risk/${encodeURIComponent(rollNo)}?semester=${semester}`,
       {
         headers: { Authorization: `Bearer ${token}` },
       }
