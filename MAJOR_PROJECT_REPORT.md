@@ -782,7 +782,7 @@ XGBClassifier(
 ### Training Process
 
 ```
-Dataset (1000 records)
+Dataset (4000 records)
     │
     ├─→ Class Weight Adjustment
     │   └─ Handle 18% positive class
