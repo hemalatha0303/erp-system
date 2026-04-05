@@ -56,6 +56,15 @@ select {
   background-color: white;
 }
 
+input[type="text"] {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  min-width: 150px;
+  outline: none;
+  background-color: white;
+}
+
 .search-btn {
   padding: 9px 25px;
   background-color: var(--primary-color);
@@ -180,6 +189,42 @@ td.l {
 td.h {
   color: #f9a825;
   background-color: #fffde7;
+}
+
+.overview-section {
+  margin-top: 28px;
+}
+
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.summary-card {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px 18px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+
+.summary-card h4 {
+  margin: 0 0 12px;
+  color: var(--text-dark);
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px dashed #ececec;
+  font-size: 0.95rem;
+}
+
+.summary-row:last-child {
+  border-bottom: none;
 }
 
 @media (max-width: 768px) {

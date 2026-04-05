@@ -125,3 +125,16 @@ input[type="text"]:focus {
 .data-table tbody tr:hover {
   background-color: rgba(13, 71, 161, 0.05);
 }
+
+/* Profile Display */
+.profile-display {
+  padding: 10px 12px;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 5px;
+  font-size: 0.95rem;
+  color: #333;
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+}

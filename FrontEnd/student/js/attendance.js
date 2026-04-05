@@ -1,14 +1,45 @@
 document.addEventListener("DOMContentLoaded", () => {
   const today = new Date();
   document.getElementById("att-month").value = today.getMonth() + 1;
-  document.getElementById("att-year").value = today.getFullYear();
+  document.getElementById("att-semester").value = 1;
 
-  loadAttendance();
+  preloadAcademicInfo();
 });
+
+async function preloadAcademicInfo() {
+  const token = localStorage.getItem("token");
+  if (!token) return;
+
+  try {
+    const res = await fetch("http://127.0.0.1:8000/student/my-academics", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (!res.ok) return;
+    const data = await res.json();
+    if (!Array.isArray(data) || data.length === 0) return;
+
+    const latest = data.reduce((acc, item) => {
+      const accKey = (acc.year || 0) * 10 + (acc.semester || 0);
+      const itemKey = (item.year || 0) * 10 + (item.semester || 0);
+      return itemKey > accKey ? item : acc;
+    }, data[0]);
+
+    if (latest.batch) {
+      document.getElementById("att-batch").value = latest.batch;
+    }
+    if (latest.semester) {
+      document.getElementById("att-semester").value = latest.semester;
+    }
+  } catch (error) {
+    console.warn("Failed to preload academic info", error);
+  }
+}
 
 async function loadAttendance() {
   const month = document.getElementById("att-month").value;
-  const year = document.getElementById("att-year").value;
+  const semester = document.getElementById("att-semester").value;
+  const batch = document.getElementById("att-batch").value.trim();
   const token = localStorage.getItem("token");
 
   if (!token) {
@@ -16,9 +47,23 @@ async function loadAttendance() {
     return;
   }
 
+  if (!semester) {
+    alert("Please select semester.");
+    return;
+  }
+
+  const tableBody = document.getElementById("tableBody");
+  tableBody.innerHTML =
+    `<tr><td colspan="35" style="text-align:center;">Loading attendance...</td></tr>`;
+
   try {
+    const params = new URLSearchParams();
+    params.append("month", month);
+    params.append("semester", semester);
+    if (batch) params.append("batch", batch);
+
     const response = await fetch(
-      `http://127.0.0.1:8000/student/attendance/monthly?month=${month}&year=${year}`,
+      `http://127.0.0.1:8000/student/attendance/monthly?${params.toString()}`,
       {
         method: "GET",
         headers: {
@@ -34,17 +79,20 @@ async function loadAttendance() {
 
     const apiData = await response.json();
 
-    const formattedData = transformData(apiData, month, year);
+    const formattedData = transformData(apiData, month);
 
     renderTable(formattedData);
+    await loadSemesterOverview(semester);
   } catch (error) {
     console.error("Attendance Load Error:", error);
     document.getElementById("tableBody").innerHTML =
       `<tr><td colspan="35" style="text-align:center; color:red;">Could not find data</td></tr>`;
+    clearSemesterOverview();
   }
 }
 
-function transformData(apiData, month, year) {
+function transformData(apiData, month) {
+  const year = new Date().getFullYear();
   const daysInMonth = new Date(year, month, 0).getDate();
   const daysArray = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
@@ -81,6 +129,7 @@ function transformData(apiData, month, year) {
   return {
     days: daysArray,
     subjects: subjectsArray,
+    monthlySummary: apiData.monthly_summary || null,
   };
 }
 
@@ -104,6 +153,9 @@ function renderTable(data) {
 
   headRow += `<th>P</th><th>A</th><th>%</th></tr>`;
   tableHead.innerHTML = headRow;
+
+  let monthPresent = 0;
+  let monthTotal = 0;
 
   data.subjects.forEach((sub) => {
     let p = 0,
@@ -142,5 +194,98 @@ function renderTable(data) {
     row += `</tr>`;
 
     tableBody.innerHTML += row;
+
+    monthPresent += p;
+    monthTotal += totalClasses;
   });
+
+  const monthPercent = monthTotal
+    ? ((monthPresent / monthTotal) * 100).toFixed(1)
+    : "0.0";
+  let monthColor = "#28a745";
+  if (monthPercent < 75) monthColor = "#dc3545";
+
+  let summaryRow = `<tr style="background:#f8f9fa; font-weight:600;">`;
+  summaryRow += `<td class="subject">Monthly Total</td>`;
+  data.days.forEach(() => {
+    summaryRow += `<td>-</td>`;
+  });
+  summaryRow += `
+      <td style="color:#007bff">${monthPresent}</td>
+      <td style="color:#dc3545">${monthTotal - monthPresent}</td>
+      <td style="color:${monthColor}">${monthPercent}%</td>
+    </tr>`;
+  tableBody.innerHTML += summaryRow;
+}
+
+async function loadSemesterOverview(semester) {
+  const token = localStorage.getItem("token");
+  const summaryEl = {
+    total: document.getElementById("sem-total"),
+    attended: document.getElementById("sem-attended"),
+    absent: document.getElementById("sem-absent"),
+    percent: document.getElementById("sem-percent"),
+    eligible: document.getElementById("sem-eligible"),
+  };
+  const subjectBody = document.getElementById("subject-wise-body");
+  subjectBody.innerHTML =
+    `<tr><td colspan="5" style="text-align:center;">Loading...</td></tr>`;
+
+  try {
+    const summaryRes = await fetch(
+      `http://127.0.0.1:8000/student/attendance/summary?semester=${semester}`,
+      { headers: { Authorization: `Bearer ${token}` } },
+    );
+    const subjectRes = await fetch(
+      `http://127.0.0.1:8000/student/attendance/subject-wise?semester=${semester}`,
+      { headers: { Authorization: `Bearer ${token}` } },
+    );
+
+    if (summaryRes.ok) {
+      const summary = await summaryRes.json();
+      summaryEl.total.textContent = summary.total_classes ?? 0;
+      summaryEl.attended.textContent = summary.attended_classes ?? 0;
+      summaryEl.absent.textContent = summary.absent_classes ?? 0;
+      summaryEl.percent.textContent = `${summary.attendance_percentage ?? 0}%`;
+      summaryEl.eligible.textContent = summary.eligible_for_exam ? "Eligible" : "Not Eligible";
+    }
+
+    if (subjectRes.ok) {
+      const rows = await subjectRes.json();
+      if (!rows || rows.length === 0) {
+        subjectBody.innerHTML =
+          `<tr><td colspan="5" style="text-align:center;">No subject attendance found.</td></tr>`;
+        return;
+      }
+
+      subjectBody.innerHTML = "";
+      rows.forEach((row) => {
+        subjectBody.innerHTML += `
+          <tr>
+            <td>${row.subject_code || "-"}</td>
+            <td>${row.subject_name || "-"}</td>
+            <td>${row.total_classes ?? 0}</td>
+            <td>${row.attended_classes ?? 0}</td>
+            <td>${row.attendance_percentage ?? 0}%</td>
+          </tr>
+        `;
+      });
+    } else {
+      subjectBody.innerHTML =
+        `<tr><td colspan="5" style="text-align:center; color:red;">Failed to fetch subject-wise attendance.</td></tr>`;
+    }
+  } catch (error) {
+    console.error("Overview Load Error:", error);
+    clearSemesterOverview();
+  }
+}
+
+function clearSemesterOverview() {
+  document.getElementById("sem-total").textContent = "0";
+  document.getElementById("sem-attended").textContent = "0";
+  document.getElementById("sem-absent").textContent = "0";
+  document.getElementById("sem-percent").textContent = "0%";
+  document.getElementById("sem-eligible").textContent = "-";
+  document.getElementById("subject-wise-body").innerHTML =
+    `<tr><td colspan="5" style="text-align:center; color:#999;">No data</td></tr>`;
 }

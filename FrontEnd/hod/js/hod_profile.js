@@ -13,11 +13,14 @@ async function loadHodProfile() {
     if (res.ok) {
       const data = await res.json();
 
-      document.getElementById("hp-name").value = data.name || "";
-      document.getElementById("hp-dept").value = data.department || "";
+      document.getElementById("hp-first").value = data.first_name || "";
+      document.getElementById("hp-last").value = data.last_name || "";
+      document.getElementById("hp-personal-email").value = data.personal_email || "";
       document.getElementById("hp-mobile").value = data.mobile_no || "";
       document.getElementById("hp-qual").value = data.qualification || "";
       document.getElementById("hp-exp").value = data.experience || 0;
+      document.getElementById("hp-branch").value = data.branch || "";
+      document.getElementById("hp-address").value = data.address || "";
       document.getElementById("hp-email").value = data.email || "";
     } else {
       console.warn("Profile not found or error loading.");
@@ -31,11 +34,14 @@ async function updateHodProfile() {
   const token = localStorage.getItem("token");
 
   const payload = {
-    name: document.getElementById("hp-name").value,
-    department: document.getElementById("hp-dept").value,
+    first_name: document.getElementById("hp-first").value,
+    last_name: document.getElementById("hp-last").value,
+    personal_email: document.getElementById("hp-personal-email").value,
     mobile_no: document.getElementById("hp-mobile").value,
     qualification: document.getElementById("hp-qual").value,
     experience: parseInt(document.getElementById("hp-exp").value) || 0,
+    branch: document.getElementById("hp-branch").value,
+    address: document.getElementById("hp-address").value,
   };
 
   try {

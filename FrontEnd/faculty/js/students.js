@@ -1,144 +1,527 @@
-async function lookupStudent() {
-  const roll = document.getElementById('lookup-roll').value.trim().toUpperCase();
+const API_BASE = typeof API_URL !== "undefined" ? API_URL : "http://127.0.0.1:8000";
+let allStudentsCache = [];
+let alertHandlerBound = false;
+
+async function fetchStudentList() {
+  const token = localStorage.getItem("token");
   
-  if (!roll) {
-    alert('Please enter a Roll Number');
+  if (!token) {
+    throw new Error("Not authenticated. Please log in again.");
+  }
+
+  try {
+    const response = await fetch(`${API_BASE}/faculty/student-list`, {
+      method: "GET",
+      headers: { 
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+    });
+
+    if (!response.ok) {
+      let errorMsg = `Error ${response.status}`;
+      try {
+        const errData = await response.json();
+        if (errData.detail) {
+          errorMsg = errData.detail;
+        } else if (errData.message) {
+          errorMsg = errData.message;
+        }
+      } catch (e) {
+        // If response body is not JSON, keep the status code message
+      }
+      throw new Error(errorMsg);
+    }
+
+    const data = await response.json();
+    if (!Array.isArray(data)) {
+      console.warn("Student list response is not an array:", data);
+      return [];
+    }
+    return data;
+  } catch (e) {
+    console.error("Fetch error:", e);
+    throw e;
+  }
+}
+
+async function loadStudentLookup() {
+  const tableBody = document.getElementById("lookup-body");
+  const resultCard = document.getElementById("lookup-result");
+
+  resultCard.style.display = "block";
+  tableBody.innerHTML =
+    "<tr><td colspan='9' style='text-align:center; padding:15px;'><i class='fas fa-spinner fa-spin'></i> Loading students...</td></tr>";
+
+  try {
+    allStudentsCache = await fetchStudentList();
+    renderLookupResults(tableBody);
+  } catch (error) {
+    console.error("Student Load Error:", error);
+    tableBody.innerHTML = `<tr><td colspan='9' style="color:red; text-align:center; padding:20px;"><i class="fas fa-exclamation-circle"></i> Error: ${error.message}</td></tr>`;
+  }
+}
+
+function renderLookupResults(tableBody) {
+  const searchText = document
+    .getElementById("lookup-search")
+    .value.trim()
+    .toUpperCase();
+  const feeStatus = document.getElementById("lookup-fee-status").value;
+  const branch = document.getElementById("lookup-branch").value;
+  const residence = document.getElementById("lookup-residence").value;
+  const section = document.getElementById("lookup-section").value;
+
+  const filtered = allStudentsCache.filter((student) => {
+    if (searchText) {
+      const fullName = `${student.first_name || ""} ${student.last_name || ""}`.toUpperCase();
+      const roll = (student.roll_no || "").toUpperCase();
+      if (!roll.includes(searchText) && !fullName.includes(searchText)) {
+        return false;
+      }
+    }
+
+    if (branch && branch !== "ALL" && student.branch !== branch) {
+      return false;
+    }
+
+    if (section && section !== "ALL" && student.section !== section) {
+      return false;
+    }
+
+    if (residence && residence !== "ALL") {
+      const normalized = normalizeResidence(student.residence_type);
+      if (residence === "DAY_SCHOLAR" && normalized !== "DAY_SCHOLAR") {
+        return false;
+      }
+      if (residence === "HOSTELER" && normalized !== "HOSTELER") {
+        return false;
+      }
+    }
+
+    if (feeStatus) {
+      const computed = computeFeeStatus(student.payment_records || []);
+      if (computed.value !== feeStatus) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+
+  renderRows(tableBody, filtered, "No students match your filters");
+}
+
+async function fetchStudentRisk(rollNo, semester = 1) {
+  const token = localStorage.getItem("token");
+  try {
+    const response = await fetch(
+      `${API_BASE}/ai/aews/student-risk/${encodeURIComponent(rollNo)}?semester=${semester}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    if (!response.ok) {
+      return null;
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching risk:", error);
+    return null;
+  }
+}
+
+function renderRows(tableBody, students, emptyMessage) {
+  if (!students || students.length === 0) {
+    tableBody.innerHTML =
+      `<tr><td colspan='9' style='text-align:center; padding:20px; color:#999;'><i class='fas fa-search'></i> ${emptyMessage}</td></tr>`;
     return;
   }
 
-  const token = localStorage.getItem('token');
-  const tableBody = document.getElementById('lookup-body');
-  const resultCard = document.getElementById('lookup-result');
+  tableBody.innerHTML = "";
+  students.forEach((student) => {
+    const name = `${student.first_name || ""} ${student.last_name || ""}`.trim() || "-";
+    const email = student.email || student.user_email || "-";
+    const phone = student.mobile_no || "-";
+    const parentMobile = student.parent_mobile_no || "-";
+    const residenceLabel = formatResidence(student.residence_type);
+    const fee = computeFeeStatus(student.payment_records || []);
+    const batch = student.batch || "";
+    const branch = student.branch || "";
+    const section = student.section || "";
 
-  tableBody.innerHTML = "<tr><td colspan='9' style='text-align:center; padding:15px;'>Searching...</td></tr>";
-  resultCard.style.display = 'block';
+    const safeName = (name || "-").replace(/"/g, "&quot;");
+    const safeEmail = (email || "-").replace(/"/g, "&quot;");
+    const safeBatch = (batch || "").replace(/"/g, "&quot;");
+    const safeBranch = (branch || "").replace(/"/g, "&quot;");
+    const safeSection = (section || "").replace(/"/g, "&quot;");
+    const safeRollNo = (student.roll_no || "").replace(/"/g, "&quot;");
+
+    const row = `
+      <tr>
+        <td style="font-weight: 600; color: #0d47a1;">${student.roll_no || "-"}</td>
+        <td>${name}</td>
+        <td style="word-break: break-all;">${email}</td>
+        <td>${phone}</td>
+        <td>${parentMobile}</td>
+        <td><span style="padding: 6px 10px; border-radius: 6px; font-weight: 600; background: ${fee.bg}; color: ${fee.color};">${fee.label}</span></td>
+        <td>${residenceLabel}</td>
+        <td>
+          <button class="risk-btn" data-roll-no="${safeRollNo}" data-name="${safeName}">
+            <i class="fas fa-heartbeat"></i> Check Risk
+          </button>
+        </td>
+        <td>
+          <button class="alert-btn" data-name="${safeName}" data-email="${safeEmail}" data-batch="${safeBatch}" data-branch="${safeBranch}" data-section="${safeSection}">
+            <i class="fas fa-paper-plane"></i> Send
+          </button>
+        </td>
+      </tr>
+    `;
+
+    tableBody.innerHTML += row;
+  });
+
+  bindAlertButtons(tableBody);
+  bindRiskButtons(tableBody);
+}
+
+async function searchStudent() {
+  const query = document.getElementById("lookup-search").value.trim();
+  if (!query) {
+    alert("Please enter a roll number or student name.");
+    return;
+  }
+
+  const tableBody = document.getElementById("lookup-body");
+  const resultCard = document.getElementById("lookup-result");
+
+  resultCard.style.display = "block";
+  tableBody.innerHTML =
+    "<tr><td colspan='9' style='text-align:center; padding:15px;'><i class='fas fa-spinner fa-spin'></i> Searching...</td></tr>";
 
   try {
-    const response = await fetch(`http://127.0.0.1:8000/faculty/student/${roll}`, {
-      method: 'GET',
-      headers: { Authorization: `Bearer ${token}` },
+    if (allStudentsCache.length === 0) {
+      allStudentsCache = await fetchStudentList();
+    }
+
+    const searchText = query.toUpperCase();
+    const filtered = allStudentsCache.filter((student) => {
+      const fullName = `${student.first_name || ""} ${student.last_name || ""}`.toUpperCase();
+      const roll = (student.roll_no || "").toUpperCase();
+      return roll.includes(searchText) || fullName.includes(searchText);
     });
 
-    const data = await response.json();
-
-    if (response.ok) {
-      const name = `${data.first_name || ''} ${data.last_name || ''}`.trim() || '-';
-      const branch = data.branch || '-';
-      const yearSem = data.year && data.semester ? `${data.year} / ${data.semester}` : '-';
-      const section = data.section || '-';
-      const phone = data.mobile_no || '-';
-      const status = data.status || 'Active';
-
-      let feeStatusHTML = '<span style="color:#757575; font-size:0.9rem;">No Info</span>';
-
-      if (data.payment_records && data.payment_records.length > 0) {
-        const pendingDues = data.payment_records.filter((p) => p.status === 'PENDING');
-        const hasDues = pendingDues.length > 0;
-
-        const tooltipText = data.payment_records
-          .map((p) => `${p.fee_type}: ${p.status} (₹${p.amount_paid})`)
-          .join('\n');
-
-        if (hasDues) {
-          feeStatusHTML = `<span style="padding: 4px 8px; border-radius: 4px; background: #ffebee; color: #c62828; font-weight: 600; cursor: help;" title="${tooltipText}">${pendingDues.length} Due</span>`;
-        } else {
-          feeStatusHTML = `<span style="padding: 4px 8px; border-radius: 4px; background: #e8f5e9; color: #2e7d32; font-weight: 600; cursor: help;" title="${tooltipText}">Cleared</span>`;
-        }
-      }
-
-      // Changed the onclick to openAlertModal()
-      const row = `
-        <tr>
-            <td style="font-weight:bold;">${data.roll_no}</td>
-            <td>${name}</td>
-            <td>${branch}</td>
-            <td>${yearSem}</td>
-            <td>${section}</td>
-            <td>${phone}</td>
-            <td>
-                <span style="padding: 4px 8px; border-radius: 4px; background: #e3f2fd; color: #1565c0; font-size: 0.85rem; font-weight: 600;">
-                    ${status}
-                </span>
-            </td>
-            <td>${feeStatusHTML}</td>
-            <td>
-              <button class="alert-btn" style="background:#fff3e0; color:#e65100; border:1px solid #ffb74d; padding:6px 12px; border-radius:4px; cursor:pointer;" onclick="openAlertModal('${data.roll_no}')" title="Notify">
-                  <i class="fas fa-bell"></i> Alert
-              </button>
-            </td>
-        </tr>
-      `;
-
-      tableBody.innerHTML = row;
-    } else {
-      tableBody.innerHTML = `<tr><td colspan='9' style="color:red; text-align:center; padding:15px;">${data.detail || 'Student not found'}</td></tr>`;
-    }
+    renderRows(tableBody, filtered, "No students found for this search");
   } catch (error) {
-    console.error(error);
-    tableBody.innerHTML = `<tr><td colspan='9' style="color:red; text-align:center;">Network Error</td></tr>`;
+    console.error("Student Search Error:", error);
+    tableBody.innerHTML = `<tr><td colspan='8' style="color:red; text-align:center; padding:20px;"><i class="fas fa-exclamation-circle"></i> Error: ${error.message}</td></tr>`;
   }
 }
 
-// --- NEW ALERT LOGIC ---
-
-function openAlertModal(roll) {
-  document.getElementById('alert-target-roll').value = roll;
-  document.getElementById('alertModal').style.display = 'flex';
+function normalizeResidence(value) {
+  if (!value) return "";
+  const normalized = value.toString().trim().toUpperCase();
+  if (normalized.includes("DAY")) return "DAY_SCHOLAR";
+  if (normalized.includes("HOSTEL")) return "HOSTELER";
+  return normalized;
 }
 
-function closeAlertModal() {
-  document.getElementById('alertModal').style.display = 'none';
+function formatResidence(value) {
+  const normalized = normalizeResidence(value);
+  if (normalized === "DAY_SCHOLAR") return "Day Scholar";
+  if (normalized === "HOSTELER") return "Hostel";
+  return "-";
+}
+
+function computeFeeStatus(records) {
+  if (!records || records.length === 0) {
+    return { value: "unpaid", label: "Unpaid", bg: "#ffebee", color: "#c62828" };
+  }
+
+  const hasPaid = records.some((r) => (r.status || "").toUpperCase() === "PAID" && (r.amount_paid || 0) > 0);
+  const hasPending = records.some((r) => {
+    const status = (r.status || "").toUpperCase();
+    const total = r.total_amount || 0;
+    const paid = r.amount_paid || 0;
+    return status === "PENDING" || total > paid;
+  });
+
+  if (hasPaid && hasPending) {
+    return { value: "partial", label: "Partial", bg: "#fff3e0", color: "#ef6c00" };
+  }
+  if (hasPaid && !hasPending) {
+    return { value: "paid", label: "Paid", bg: "#e8f5e9", color: "#2e7d32" };
+  }
+  return { value: "unpaid", label: "Unpaid", bg: "#ffebee", color: "#c62828" };
+}
+
+function bindAlertButtons(tableBody) {
+  if (alertHandlerBound) return;
+  tableBody.addEventListener("click", (event) => {
+    const btn = event.target.closest(".alert-btn");
+    if (!btn) return;
+
+    const name = btn.getAttribute("data-name") || "Student";
+    const email = btn.getAttribute("data-email") || "";
+    const batch = btn.getAttribute("data-batch") || "";
+    const branch = btn.getAttribute("data-branch") || "";
+    const section = btn.getAttribute("data-section") || "";
+
+    openStudentAlertModal({ name, email, batch, branch, section });
+  });
+  alertHandlerBound = true;
+}
+
+function openStudentAlertModal(student) {
+  const modal = document.getElementById("studentAlertModal");
+  if (!modal) return;
+
+  document.getElementById("alert-student-name").value = student.name || "Student";
+  document.getElementById("alert-student-email").value = student.email || "";
+  document.getElementById("alert-student-batch").value = student.batch || "";
+  document.getElementById("alert-student-branch").value = student.branch || "";
+  document.getElementById("alert-student-section").value = student.section || "";
+
+  document.getElementById("alert-title").value = "";
+  document.getElementById("alert-message").value = "";
+  document.getElementById("alert-category").value = "GENERAL";
+  document.getElementById("alert-priority").value = "NORMAL";
+
+  modal.style.display = "flex";
+}
+
+function closeStudentAlertModal() {
+  const modal = document.getElementById("studentAlertModal");
+  if (modal) {
+    modal.style.display = "none";
+  }
 }
 
 async function sendStudentAlert() {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("Session expired. Please log in again.");
+    return;
+  }
+
+  const email = document.getElementById("alert-student-email").value.trim();
+  const batch = document.getElementById("alert-student-batch").value.trim();
+  const branch = document.getElementById("alert-student-branch").value.trim();
+  const section = document.getElementById("alert-student-section").value.trim();
+  const title = document.getElementById("alert-title").value.trim();
+  const message = document.getElementById("alert-message").value.trim();
+  const category = document.getElementById("alert-category").value;
+  const priority = document.getElementById("alert-priority").value;
+
+  if (!email) {
+    alert("Student email is missing.");
+    return;
+  }
+
+  if (!batch) {
+    alert("Student batch is missing. Please refresh the list.");
+    return;
+  }
+
+  if (!title || !message) {
+    alert("Please fill in both Title and Message.");
+    return;
+  }
+
   const payload = {
-      student_roll: document.getElementById('alert-target-roll').value.trim(),
-      severity: document.getElementById('alert-severity').value,
-      title: document.getElementById('alert-title').value.trim(),
-      message: document.getElementById('alert-message').value.trim()
+    title,
+    message,
+    target_role: "STUDENT",
+    batch,
+    branch: branch || null,
+    section: section || null,
+    target_email: email,
+    category,
+    priority,
   };
 
-  if (!payload.student_roll || !payload.title || !payload.message) {
-      alert("Please fill in the Title and Message fields.");
-      return;
+  try {
+    const response = await fetch(`${API_BASE}/faculty/notifications`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.detail || data.message || "Failed to send alert");
+    }
+
+    alert("Alert sent successfully!");
+    closeStudentAlertModal();
+  } catch (error) {
+    console.error("Alert Send Error:", error);
+    alert("Error: " + (error.message || "Failed to send alert"));
+  }
+}
+
+window.onclick = function (event) {
+  const modal = document.getElementById("studentAlertModal");
+  if (modal && event.target === modal) {
+    closeStudentAlertModal();
   }
 
-  const token = localStorage.getItem("token");
+  const riskModal = document.getElementById("riskModal");
+  if (riskModal && event.target === riskModal) {
+    closeRiskModal();
+  }
+};
+
+// ===================================
+// RISK ASSESSMENT FUNCTIONS
+// ===================================
+
+let currentRiskData = null;
+
+function bindRiskButtons(tableBody) {
+  tableBody.addEventListener("click", async (event) => {
+    const btn = event.target.closest(".risk-btn");
+    if (!btn) return;
+
+    const rollNo = btn.getAttribute("data-roll-no");
+    const name = btn.getAttribute("data-name");
+
+    await showRiskAssessment(rollNo, name);
+  });
+}
+
+async function showRiskAssessment(rollNo, studentName) {
+  const modal = document.getElementById("riskModal");
+  if (!modal) return;
+
+  // Show loading state
+  document.getElementById("risk-student-name").textContent = studentName;
+  document.getElementById("risk-level-container").innerHTML = '<div style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Loading risk assessment...</div>';
+  document.getElementById("risk-explanation").textContent = "";
+  document.getElementById("risk-factors").innerHTML = "";
+  modal.style.display = "flex";
 
   try {
-      // NOTE: Make sure this route matches exactly what you put in the FastAPI router 
-      // (/faculty/alerts/send or /hod/alerts/send)
-      const res = await fetch("http://127.0.0.1:8000/faculty/alerts/send", {
-          method: "POST",
-          headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${token}`
-          },
-          body: JSON.stringify(payload)
-      });
+    const semester = 1; // Default semester, can be made dynamic
+    const riskData = await fetchStudentRisk(rollNo, semester);
 
-      const data = await res.json();
-      
-      if (res.ok) {
-          alert("✅ " + data.message);
-          closeAlertModal();
-          
-          // Clear inputs for the next time
-          document.getElementById('alert-title').value = "";
-          document.getElementById('alert-message').value = "";
-      } else {
-          alert("❌ Failed: " + (data.detail || "Unknown error"));
-      }
+    if (!riskData || riskData.status !== "success") {
+      document.getElementById("risk-level-container").innerHTML = `<div style="color:red;"><i class="fas fa-exclamation-circle"></i> Could not fetch risk data</div>`;
+      return;
+    }
+
+    currentRiskData = riskData;
+    populateRiskModal(riskData);
   } catch (error) {
-      console.error("Alert Error:", error);
-      alert("Network Error while sending the alert.");
+    console.error("Error loading risk assessment:", error);
+    document.getElementById("risk-level-container").innerHTML = `<div style="color:red;"><i class="fas fa-exclamation-circle"></i> Error loading data</div>`;
   }
 }
 
-// Close modal if user clicks outside of the white box
-window.onclick = function(event) {
-  const modal = document.getElementById('alertModal');
-  if (event.target == modal) {
-      closeAlertModal();
+function populateRiskModal(riskData) {
+  const rollNo = riskData.roll_no || "N/A";
+  const studentName = riskData.student_name || "Student";
+  const riskLevel = riskData.risk_level || "UNKNOWN";
+  const probability = riskData.risk_probability || 0;
+  const explanation = riskData.explanation || "No explanation available";
+  const factors = riskData.factors || {};
+
+  // Update student name
+  document.getElementById("risk-student-name").textContent = `${studentName} (${rollNo})`;
+
+  // Update risk level badge
+  let bgColor = "#388e3c"; // GREEN
+  let textColor = "#fff";
+  let icon = "fa-check-circle";
+
+  if (riskLevel === "HIGH") {
+    bgColor = "#d32f2f"; // RED
+    icon = "fa-exclamation-circle";
+  } else if (riskLevel === "MEDIUM") {
+    bgColor = "#f57c00"; // ORANGE
+    icon = "fa-exclamation-triangle";
+  }
+
+  const badgeHtml = `<div style="padding:10px 16px; border-radius:20px; font-weight:600; background:${bgColor}; color:#fff; display:inline-block;">
+    <i class="fas ${icon}" style="margin-right:8px;"></i>${riskLevel}
+  </div>`;
+  
+  document.getElementById("risk-level-container").innerHTML = `<label style="display:block; font-weight:600; margin-bottom:8px; color:#555;">Risk Level:</label>
+    <div style="display:flex; align-items:center; gap:10px;">
+      ${badgeHtml}
+      <span id="risk-probability" style="font-size:18px; font-weight:600; color:#333;">${probability}% failure risk</span>
+    </div>`;
+
+  // Update explanation
+  document.getElementById("risk-explanation").textContent = explanation;
+
+  // Update factors breakdown
+  let factorsHtml = `
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+      <div style="padding:8px; background:#fff; border-left: 4px solid #0d47a1; border-radius:4px;">
+        <div style="font-size:12px; color:#999;">Attendance</div>
+        <div style="font-size:16px; font-weight:600; color:#333;">${factors.attendance || 0}%</div>
+      </div>
+      <div style="padding:8px; background:#fff; border-left: 4px solid #0d47a1; border-radius:4px;">
+        <div style="font-size:12px; color:#999;">Backlogs</div>
+        <div style="font-size:16px; font-weight:600; color:#333;">${factors.backlogs || 0}</div>
+      </div>
+      <div style="padding:8px; background:#fff; border-left: 4px solid #0d47a1; border-radius:4px;">
+        <div style="font-size:12px; color:#999;">Prev SGPA</div>
+        <div style="font-size:16px; font-weight:600; color:#333;">${factors.previous_sgpa || 0}/10</div>
+      </div>
+      <div style="padding:8px; background:#fff; border-left: 4px solid #0d47a1; border-radius:4px;">
+        <div style="font-size:12px; color:#999;">Mid Score Avg</div>
+        <div style="font-size:16px; font-weight:600; color:#333;">${factors.mid_score_average || 0}/30</div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById("risk-factors").innerHTML = factorsHtml;
+}
+
+function closeRiskModal() {
+  const modal = document.getElementById("riskModal");
+  if (modal) {
+    modal.style.display = "none";
   }
 }
+
+async function sendAlertFromRisk() {
+  if (!currentRiskData) {
+    alert("No risk data available");
+    return;
+  }
+
+  // Pre-fill the alert modal with risk-specific data
+  const rollNo = currentRiskData.roll_no;
+  const studentName = currentRiskData.student_name;
+  const riskLevel = currentRiskData.risk_level;
+  const probability = currentRiskData.risk_probability;
+
+  // Close risk modal and open alert modal
+  closeRiskModal();
+
+  // Populate alert modal
+  document.getElementById("alert-student-name").value = studentName || "Student";
+  document.getElementById("alert-title").value = `Academic Risk Alert - ${riskLevel} Risk (${probability}%)`;
+  document.getElementById("alert-message").value = `
+Student Analysis:
+- Risk Level: ${riskLevel}
+- Failure Probability: ${probability}%
+- Analysis: ${currentRiskData.explanation}
+
+Please review and contact the student if necessary to provide academic support.
+  `;
+  document.getElementById("alert-category").value = "ACADEMIC";
+  document.getElementById("alert-priority").value = riskLevel === "HIGH" ? "CRITICAL" : "IMPORTANT";
+
+  document.getElementById("studentAlertModal").style.display = "flex";
+}
+

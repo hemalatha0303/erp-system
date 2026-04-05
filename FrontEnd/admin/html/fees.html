@@ -49,8 +49,8 @@
         <span class="close-btn" onclick="closeModal('structureModal')">×</span>
         <h3>Create Fee Structure</h3>
         <div class="form-group">
-          <label>Academic Year</label>
-          <input id="fs-year" placeholder=" 1, 2, 3, 4" type="number" />
+          <label>Batch</label>
+          <input id="fs-year" placeholder="e.g., 2022-26" type="text" />
         </div>
         <div class="form-group">
           <label>Quota</label>
@@ -109,13 +109,41 @@
         </div>
         <div class="form-group">
           <label>Payment Mode</label>
-          <select id="pay-mode">
+          <select id="pay-mode" onchange="updatePaymentModeFields()">
             <option value="CASH">Cash</option>
             <option value="UPI">UPI</option>
-            <option value="BANK_TRANSFER">Bank Transfer</option>
             <option value="DD">Demand Draft</option>
           </select>
         </div>
+        
+        <!-- UPI Fields -->
+        <div id="upiFields" style="display: none;">
+          <div class="form-group">
+            <label>Transaction ID</label>
+            <input id="upi-txn-id" placeholder="e.g. UPI ref number" type="text" />
+          </div>
+          <div class="form-group">
+            <label>Phone Number</label>
+            <input id="upi-phone" placeholder="e.g. 9876543210" type="text" />
+          </div>
+          <div class="form-group">
+            <label>Name of Person</label>
+            <input id="upi-name" placeholder="Name of person in payment" type="text" />
+          </div>
+        </div>
+        
+        <!-- Demand Draft Fields -->
+        <div id="ddFields" style="display: none;">
+          <div class="form-group">
+            <label>Account Number</label>
+            <input id="dd-account" placeholder="Account number" type="text" />
+          </div>
+          <div class="form-group">
+            <label>Mobile Number</label>
+            <input id="dd-mobile" placeholder="Mobile number" type="text" />
+          </div>
+        </div>
+        
         <button class="primary-btn" onclick="updatePayment()">
           Submit Payment
         </button>

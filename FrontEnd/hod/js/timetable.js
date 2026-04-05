@@ -19,23 +19,45 @@ async function uploadTimetable() {
     return;
   }
 
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("year", document.getElementById("tt-year").value);
-  formData.append("semester", document.getElementById("tt-sem").value);
-  formData.append("branch", document.getElementById("tt-branch").value);
-
+  const batchInput = document.getElementById("tt-year").value.trim();
+  const semester = document.getElementById("tt-sem").value;
+  const branch = document.getElementById("tt-branch").value;
   const type = document.getElementById("tt-type").value;
 
+  if (!batchInput || !semester || !branch) {
+    alert("Please fill in all required fields: Batch, Semester, Branch");
+    return;
+  }
+
+  // Extract year from batch format (e.g., "2022-26" -> 2022)
+  const yearMatch = batchInput.match(/^(\d{4})/);
+  const year = yearMatch ? parseInt(yearMatch[1]) : parseInt(batchInput);
+  
+  if (isNaN(year)) {
+    alert("Invalid batch format. Expected format: YYYY-XX (e.g., 2022-26) or just the year (e.g., 2022)");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("year", year);
+  formData.append("semester", semester);
+  formData.append("branch", branch);
+
   if (type === "CLASS") {
-    formData.append("section", document.getElementById("tt-sec").value);
-    formData.append("faculty_email", "");
+    const section = document.getElementById("tt-sec").value;
+    if (!section) {
+      alert("Please enter Section for Class Timetable");
+      return;
+    }
+    formData.append("section", section);
   } else {
-    formData.append("section", "");
-    formData.append(
-      "faculty_email",
-      document.getElementById("tt-fac-email").value,
-    );
+    const facEmail = document.getElementById("tt-fac-email").value;
+    if (!facEmail) {
+      alert("Please enter Faculty Email for Faculty Workload");
+      return;
+    }
+    formData.append("faculty_email", facEmail);
   }
 
   try {
@@ -45,12 +67,26 @@ async function uploadTimetable() {
       headers: { Authorization: "Bearer " + token },
       body: formData,
     });
+
     const data = await res.json();
 
-    if (res.ok) alert(data.message);
-    else alert("Error: " + (data.detail || "Upload failed"));
+    if (res.ok) {
+      alert(data.message || "Timetable uploaded successfully");
+      document.getElementById("tt-file").value = "";
+      document.getElementById("tt-year").value = "";
+      document.getElementById("tt-sec").value = "";
+      document.getElementById("tt-branch").value = "";
+      document.getElementById("tt-fac-email").value = "";
+    } else {
+      let errorDetail = data.detail || data.message || "Upload failed";
+      if (typeof errorDetail !== 'string') {
+        errorDetail = JSON.stringify(errorDetail);
+      }
+      console.error("Upload error:", errorDetail);
+      alert("Error: " + errorDetail);
+    }
   } catch (e) {
-    console.error(e);
-    alert("Network Error");
+    console.error("Network error:", e);
+    alert("Network Error: " + (e.message || "Failed to upload timetable"));
   }
 }

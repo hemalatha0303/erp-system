@@ -34,14 +34,14 @@ async function loadProfile() {
       const data = await response.json();
 
       // 1. Welcome Message (First name only)
-      const fullName = data.name || "Professor";
+      const fullName = `${data.first_name || ""} ${data.last_name || ""}`.trim() || "Professor";
       document.getElementById("fac-name").textContent = fullName.split(" ")[0];
 
       // 2. Profile Card Details
       document.getElementById("p-name").textContent = fullName;
       document.getElementById("p-qual").textContent =
         data.qualification || "N/A";
-      document.getElementById("p-dept").textContent = data.department || "N/A";
+      document.getElementById("p-dept").textContent = data.branch || "N/A";
       document.getElementById("p-exp").textContent =
         `${data.experience || 0} Years`;
     } else {

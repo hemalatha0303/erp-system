@@ -58,13 +58,29 @@ def get_student_payment_info(
         paid_map_by_year[p.year][p.fee_type] += p.amount_paid
 
         if p.amount_paid > 0:
+            # Parse payment details from description
+            payment_details_str = ""
+            if p.description:
+                try:
+                    import json
+                    details = json.loads(p.description)
+                    if p.payment_mode == "UPI" and details:
+                        payment_details_str = f"{details.get('transaction_id', '')}, {details.get('phone_number', '')}, {details.get('person_name', '')}"
+                    elif p.payment_mode == "DD" and details:
+                        payment_details_str = f"{details.get('account_number', '')}, {details.get('mobile_number', '')}"
+                except:
+                    pass
+            
             transactions.append(
                 {
                     "date": p.payment_date.strftime("%d-%b-%Y") if p.payment_date else "N/A",
                     "type": format_fee_type(p.fee_type),
                     "ref": p.receipt_id,
                     "amount": float(p.amount_paid),
-                    "year_paid_for": p.year, 
+                    "year_paid_for": p.year,
+                    "payment_mode": p.payment_mode or "Cash",
+                    "payment_details": payment_details_str,
+                    "fee_type": p.fee_type,
                 }
             )
 
@@ -150,5 +166,5 @@ def update_payment(
     if user["role"] != "ADMIN":
         raise HTTPException(status_code=403)
 
-    update_student_payment(db, req, user["sub"])
-    return {"message": "Payment updated successfully"}
+    result = update_student_payment(db, req, user["sub"])
+    return result

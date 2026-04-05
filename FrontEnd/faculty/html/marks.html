@@ -21,12 +21,27 @@
         <div class="page-header"><h2>Internal Marks Management</h2></div>
         <div class="card filters-row horizontal-form">
           <div class="inline-group">
-            <label>Year</label>
-            <select id="mk-year">
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
+            <label>Batch <span style="color: #e74c3c;">*</span></label>
+            <input id="mk-batch" placeholder="e.g., 2022-26" type="text" required />
+          </div>
+          <div class="inline-group">
+            <label>Branch</label>
+            <select id="mk-branch">
+              <option value="ALL">All Branches</option>
+              <option value="CSE">CSE</option>
+              <option value="CSM">CSM</option>
+              <option value="CIC">CIC</option>
+              <option value="IT">IT</option>
+              <option value="ECE">ECE</option>
+            </select>
+          </div>
+          <div class="inline-group">
+            <label>Section</label>
+            <select id="mk-sec">
+              <option value="ALL">All Sections</option>
+              <option value="A">A</option>
+              <option value="B">B</option>
+              <option value="C">C</option>
             </select>
           </div>
           <div class="inline-group">
@@ -34,30 +49,18 @@
             <select id="mk-sem">
               <option value="1">1</option>
               <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
             </select>
-          </div>
-          <div class="inline-group">
-            <label>Branch</label>
-            <input
-              id="mk-branch"
-              placeholder="BRANCH CODE"
-              style="width: 70px"
-              type="text"
-            />
-          </div>
-          <div class="inline-group">
-            <label>Sec</label>
-            <input
-              id="mk-sec"
-              placeholder="SECTION"
-              style="width: 40px"
-              type="text"
-            />
           </div>
           <input
             id="mk-sub"
             type="text"
-            placeholder="Subject Code "
+            placeholder="Subject Code"
             pattern="[A-Z]{2}[0-9]{3}"
             title="Format: CS301"
             style="min-width: 160px"
@@ -74,7 +77,7 @@
           <div class="upload-info">
             <h4><i class="fas fa-file-excel"></i> Bulk Upload</h4>
             <p>
-              Upload .xlsx (Roll No, Open Book, Descriptive, Seminar, Objective)
+              Upload .xlsx (Roll No, Subject Code, Subject Name, Open Book, Objective, Descriptive, Seminar)
             </p>
           </div>
           <div class="upload-actions">
@@ -105,17 +108,17 @@
             <table class="data-table marks-table">
               <thead>
                 <tr>
-                  <th rowspan="2" width="10%">Roll No</th>
-                  <th rowspan="2" width="15%">Name</th>
-                  <th colspan="2">Open Book (5)</th>
-                  <th colspan="2">Descriptive (10)</th>
+                  <th rowspan="2" width="8%">Roll No</th>
+                  <th rowspan="2" width="12%">Name</th>
+                  <th rowspan="2" width="6%" style="text-align: center">AB</th>
+                  <th colspan="2">Open Book (20)</th>
+                  <th colspan="2">Objective (20)</th>
+                  <th colspan="2">Descriptive (30)</th>
                   <th colspan="2">Seminar (5)</th>
-                  <th colspan="2">Objective (5)</th>
                   <th rowspan="2" width="5%">Mid-1</th>
                   <th rowspan="2" width="5%">Mid-2</th>
                 </tr>
                 <tr class="sub-header">
-                  <th>M1</th>
                   <th>M2</th>
                   <th>M1</th>
                   <th>M2</th>
@@ -123,6 +126,7 @@
                   <th>M2</th>
                   <th>M1</th>
                   <th>M2</th>
+                  <th>M1</th>
                 </tr>
               </thead>
               <tbody id="mk-list"></tbody>

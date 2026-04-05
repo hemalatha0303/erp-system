@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Student Records - Admin ERP</title>
+    <title>FindMe - User Directory - Admin ERP</title>
     <link href="../../style.css" rel="stylesheet" />
     <link href="../css/components.css" rel="stylesheet" />
     <link href="../css/students.css" rel="stylesheet" />
@@ -19,26 +19,28 @@
       <div id="header-container"></div>
       <div class="dashboard-wrapper">
         <div class="page-header">
-          <h2>Student Records</h2>
-          <!-- <button
-            class="add-btn"
-            onclick="alert('Feature: Add Single Student Manually')"
-          >
-            <i class="fas fa-plus"></i> Add Student
-          </button> -->
+          <h2>FindMe - User Directory</h2>
         </div>
         <div class="filters-section">
+          <div class="filter-group">
+            <label><strong>Select User Type:</strong></label>
+            <select id="userTypeSelect" onchange="changeUserType()">
+              <option value="STUDENT">Student</option>
+              <option value="FACULTY">Faculty</option>
+              <option value="HOD">HOD</option>
+            </select>
+          </div>
           <div class="search-box">
             <i class="fas fa-search"></i>
             <input
               id="searchInput"
-              onkeyup="filterStudents()"
-              placeholder="Search by Roll No or Name..."
+              onkeyup="filterRecords()"
+              placeholder="Search..."
               type="text"
             />
           </div>
-          <div class="filter-group">
-            <select id="deptFilter" onchange="filterStudents()">
+          <div class="filter-group" id="studentFilters" style="display: flex; gap: 10px;">
+            <select id="deptFilter" onchange="filterRecords()">
               <option value="All">All Departments</option>
               <option value="CSE">CSE</option>
               <option value="CSM">CSM</option>
@@ -49,31 +51,39 @@
               <option value="CIVIL">CIVIL</option>
               <option value="MECH">MECH</option>
             </select>
+            <input id="yearFilter" placeholder="Batch e.g., 2022-26" type="text" onchange="filterRecords()" />
           </div>
-          <div class="filter-group">
-            <select id="yearFilter" onchange="filterStudents()">
-              <option value="All">All Years</option>
-              <option value="1">1st Year</option>
-              <option value="2">2nd Year</option>
-              <option value="3">3rd Year</option>
-              <option value="4">4th Year</option>
+          <div class="filter-group" id="facultyHodFilters" style="display: none;">
+            <select id="branchFilter" onchange="filterRecords()">
+              <option value="All">All Branches</option>
+              <option value="CSE">CSE</option>
+              <option value="CSM">CSM</option>
+              <option value="ECE">ECE</option>
+              <option value="EEE">EEE</option>
+              <option value="AIML">AIML</option>
+              <option value="AIDS">AIDS</option>
+              <option value="CIVIL">CIVIL</option>
+              <option value="MECH">MECH</option>
             </select>
           </div>
         </div>
         <div class="table-container">
           <table class="data-table">
             <thead>
-              <tr>
+              <tr id="tableHeaders">
                 <th>Roll Number</th>
-                <th>Student Name</th>
+                <th>Name</th>
+                <th>Email</th>
                 <th>Department</th>
-                <th>Year/Sem</th>
+                <th>Year</th>
+                <th>Section</th>
                 <th>Contact</th>
+                <th>Residence</th>
                 <th>Status</th>
-                <!-- <th>Actions</th> -->
+                <th>Actions</th>
               </tr>
             </thead>
-            <tbody id="student-list"></tbody>
+            <tbody id="records-list"></tbody>
           </table>
         </div>
       </div>
@@ -108,6 +118,127 @@
         </div>
       </div>
     </div> -->
+    
+    <!-- STUDENT DETAILS MODAL -->
+    <div id="detailsModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="modalTitle">Student Details</h2>
+          <span class="close" onclick="closeDetailsModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+          <div class="details-grid">
+            <!-- Personal Information Section -->
+            <div class="details-section">
+              <h3><i class="fas fa-user"></i> Personal Information</h3>
+              <div class="detail-row">
+                <span class="detail-label">Roll Number:</span>
+                <span class="detail-value" id="detail-roll"></span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">First Name:</span>
+                <span class="detail-value" id="detail-firstname"></span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Last Name:</span>
+                <span class="detail-value" id="detail-lastname"></span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Gender:</span>
+                <span class="detail-value" id="detail-gender"></span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Date of Birth:</span>
+                <span class="detail-value" id="detail-dob"></span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Blood Group:</span>
+                <span class="detail-value" id="detail-blood"></span>
+              </div>
+            </div>
+
+            <!-- Contact Information Section -->
+            <div class="details-section">
+              <h3><i class="fas fa-phone"></i> Contact Information</h3>
+              <div class="detail-row">
+                <span class="detail-label">Email:</span>
+                <span class="detail-value" id="detail-email"></span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Mobile:</span>
+                <span class="detail-value" id="detail-mobile"></span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Parent Mobile:</span>
+                <span class="detail-value" id="detail-parent-mobile"></span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Parent Name:</span>
+                <span class="detail-value" id="detail-parent-name"></span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Address:</span>
+                <span class="detail-value" id="detail-address"></span>
+              </div>
+            </div>
+
+            <!-- Academic Information Section -->
+            <div class="details-section">
+              <h3><i class="fas fa-graduation-cap"></i> Academic Information</h3>
+              <div class="detail-row">
+                <span class="detail-label">Branch/Department:</span>
+                <span class="detail-value" id="detail-branch"></span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Batch:</span>
+                <span class="detail-value" id="detail-batch"></span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Course:</span>
+                <span class="detail-value" id="detail-course"></span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Year:</span>
+                <span class="detail-value" id="detail-year"></span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Semester:</span>
+                <span class="detail-value" id="detail-semester"></span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Section:</span>
+                <span class="detail-value" id="detail-section"></span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Quota:</span>
+                <span class="detail-value" id="detail-quota"></span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Admission Date:</span>
+                <span class="detail-value" id="detail-admission-date"></span>
+              </div>
+            </div>
+
+            <!-- Other Information Section -->
+            <div class="details-section">
+              <h3><i class="fas fa-info-circle"></i> Other Information</h3>
+              <div class="detail-row">
+                <span class="detail-label">Residence Type:</span>
+                <span class="detail-value" id="detail-residence"></span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Status:</span>
+                <span class="detail-value" id="detail-status"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-close" onclick="closeDetailsModal()">Close</button>
+        </div>
+      </div>
+    </div>
+    
     <script src="../js/main.js"></script>
     <script src="../js/students.js"></script>
   </body>

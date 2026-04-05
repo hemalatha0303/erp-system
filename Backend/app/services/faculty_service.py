@@ -14,13 +14,18 @@ def upsert_faculty_profile(db: Session, email: str, data):
 
     faculty.first_name = data.first_name
     faculty.last_name = data.last_name
-    faculty.gender = data.gender
-    faculty.blood_group = data.blood_group
-    faculty.date_of_birth = data.date_of_birth
     faculty.mobile_no = data.mobile_no
     faculty.address = data.address
     faculty.qualification = data.qualification
     faculty.experience = data.experience
+    if getattr(data, "personal_email", None) is not None:
+        faculty.personal_email = data.personal_email
+    if getattr(data, "subject_code", None) is not None:
+        faculty.subject_code = data.subject_code
+    if getattr(data, "subject_name", None) is not None:
+        faculty.subject_name = data.subject_name
+    if getattr(data, "branch", None) is not None:
+        faculty.branch = data.branch
 
     db.add(faculty)
     db.commit()
@@ -38,9 +43,24 @@ def get_student_info_by_rollno(db: Session, roll_no: str):
     academic = db.query(Academic).filter(
         Academic.sid == student.id
     ).order_by(Academic.year.desc()).first()
+    
     payment_records = db.query(payment.Payment).filter(
         payment.Payment.srno == student.roll_no
     ).all()
+    
+    # Serialize payment records properly
+    payment_data = []
+    for p in payment_records:
+        amount_val = getattr(p, "amount", None)
+        payment_data.append({
+            "fee_type": p.fee_type,
+            "amount": amount_val,
+            "amount_paid": p.amount_paid,
+            "balance": (amount_val or 0) - (p.amount_paid or 0),
+            "status": p.status,
+            "due_date": str(getattr(p, "due_date", None)) if getattr(p, "due_date", None) else None
+        })
+    
     return {
         "roll_no": student.roll_no,
         "first_name": student.first_name,
@@ -58,5 +78,5 @@ def get_student_info_by_rollno(db: Session, roll_no: str):
         "section": academic.section if academic else None,
         "type": academic.type if academic else None,
         "status": academic.status if academic else None,
-        "payment_records": payment_records
+        "payment_records": payment_data
     }

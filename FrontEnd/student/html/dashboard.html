@@ -34,29 +34,6 @@
           <p>Here is your daily overview.</p>
         </div>
         <div class="dashboard-grid">
-          <div class="card profile-card">
-            <div class="card-header">
-              <h3>My Profile</h3>
-              <a class="link-btn" href="profile.html">View Full</a>
-            </div>
-            <div class="profile-details">
-              <div class="detail-row">
-                <span>Name:</span> <strong id="profile-name">Loading...</strong>
-              </div>
-              <div class="detail-row">
-                <span>Year/Sem:</span>
-                <strong id="profile-year">Loading...</strong>
-              </div>
-              <div class="detail-row">
-                <span>Branch:</span>
-                <strong id="profile-branch">Loading...</strong>
-              </div>
-              <div class="detail-row">
-                <!-- <span>Class Teacher:</span> -->
-                <!-- <strong id="profile-teacher">Loading...</strong> -->
-              </div>
-            </div>
-          </div>
           <div class="card stats-card">
             <h3>Attendance Overview</h3>
             <div class="chart-container">
@@ -81,6 +58,8 @@
             </div>
             <p class="chart-label">Current Performance</p>
           </div>
+        </div>
+        <div class="dashboard-grid-2">
           <div class="card notification-card">
             <h3>Recent Updates</h3>
             <ul class="notif-list">
@@ -104,19 +83,19 @@
               </li>
             </ul>
           </div>
-        </div>
-        <div class="card timetable-card">
-          <h4><i class="fas fa-calendar-alt"></i> Today's Timetable</h4>
-          <div class="timetable-placeholder" id="timetable-display">
-            <img
-              alt="Timetable not uploaded"
-              id="tt-image"
-              src="."
-              style="max-width: 600px; display: none; border-radius: 4px"
-            />
-            <p id="tt-msg" style="font-size: 0.9rem; margin-top: 5px">
-              Loading schedule...
-            </p>
+          <div class="card timetable-card">
+            <h4><i class="fas fa-calendar-alt"></i> Today's Timetable</h4>
+            <div class="timetable-placeholder" id="timetable-display">
+              <img
+                alt="Timetable not uploaded"
+                id="tt-image"
+                src="."
+                style="max-width: 600px; display: none; border-radius: 4px"
+              />
+              <p id="tt-msg" style="font-size: 0.9rem; margin-top: 5px">
+                Loading schedule...
+              </p>
+            </div>
           </div>
         </div>
       </div>

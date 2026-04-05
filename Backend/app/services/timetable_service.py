@@ -6,12 +6,20 @@ BASE_PATH = "uploads/timetables"
 def upload_timetable_image(
     db, file, year, semester, branch, section, faculty_email, uploaded_by
 ):
-    if section:
+    # Validate inputs
+    if not year or not semester or not branch:
+        raise ValueError("Year, semester, and branch are required")
+    
+    # For class timetable: section is required
+    if section and not faculty_email:
         folder = f"{BASE_PATH}/students"
         filename = f"{branch}_{year}_{semester}_{section}.png"
-    else:
+    # For faculty workload: faculty_email is required
+    elif faculty_email and not section:
         folder = f"{BASE_PATH}/faculty"
         filename = f"{faculty_email}.png"
+    else:
+        raise ValueError("Either section (for class) or faculty_email (for faculty workload) must be provided, but not both")
 
     os.makedirs(folder, exist_ok=True)
 

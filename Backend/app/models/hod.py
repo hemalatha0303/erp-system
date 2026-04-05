@@ -1,14 +1,16 @@
-from sqlalchemy import Column, Date, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, Text, ForeignKey
 from app.core.database import Base
-from datetime import date
+
 class HODProfile(Base):
     __tablename__ = "hod"
 
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String(100), unique=True, index=True)
-    name = Column(String(100))
-    department = Column(String(50))
+    personal_email = Column(String(100))
+    first_name = Column(String(100))
+    last_name = Column(String(100))
     mobile_no = Column(String(15))
+    address = Column(Text)
     qualification = Column(String(100))
     experience = Column(Integer)
-    join_date = Column(Date, default=date.today)
+    branch = Column(String(20))

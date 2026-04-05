@@ -13,99 +13,198 @@
       rel="stylesheet"
     />
   </head>
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>Student Lookup</title>
-    <link href="../../style.css" rel="stylesheet" />
-    <link href="../css/components.css" rel="stylesheet" />
-    <link href="../css/students.css" rel="stylesheet" />
-    <link href="../css/faculty.css" rel="stylesheet" />
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-      rel="stylesheet"
-    />
-  </head>
   <body>
     <div id="sidebar-container"></div>
     <div class="main-content">
       <div id="header-container"></div>
       <div class="dashboard-wrapper">
-        <div class="page-header"><h2>Student Lookup</h2></div>
-        
-        <div class="card search-card">
-          <div class="form-group">
-            <label>Enter Roll Number</label>
-            <div class="input-with-btn">
-              <input id="lookup-roll" placeholder="Enter Roll No" type="text" />
-              <button class="primary-btn" onclick="lookupStudent()">
-                <i class="fas fa-search"></i> Search
-              </button>
+        <div class="page-header"><h2><i class="fas fa-search"></i> Student Lookup</h2></div>
+
+        <div class="lookup-grid">
+          <div class="card search-card lookup-panel">
+            <h3><i class="fas fa-magnifying-glass"></i> Search Student</h3>
+            <div class="form-group">
+              <label>Roll No / Name</label>
+              <div class="input-with-btn">
+                <input id="lookup-search" placeholder="Enter Roll No or Student Name" type="text" />
+                <button class="primary-btn" onclick="searchStudent()">
+                  <i class="fas fa-search"></i> Search
+                </button>
+              </div>
             </div>
+          </div>
+
+          <div class="card search-card lookup-panel">
+            <h3><i class="fas fa-filter"></i> Filters</h3>
+            <div class="filters-grid">
+              <div class="form-group">
+                <label>Fee Status</label>
+                <select id="lookup-fee-status">
+                  <option value="">All Status</option>
+                  <option value="paid">Paid</option>
+                  <option value="unpaid">Unpaid</option>
+                  <option value="partial">Partial</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Branch</label>
+                <select id="lookup-branch">
+                  <option value="ALL">All Branches</option>
+                  <option value="CSE">CSE</option>
+                  <option value="CSM">CSM</option>
+                  <option value="CIC">CIC</option>
+                  <option value="IT">IT</option>
+                  <option value="ECE">ECE</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Residence</label>
+                <select id="lookup-residence">
+                  <option value="ALL">Both</option>
+                  <option value="DAY_SCHOLAR">Day Scholar</option>
+                  <option value="HOSTELER">Hostel</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Section</label>
+                <select id="lookup-section">
+                  <option value="ALL">All Sections</option>
+                  <option value="A">A</option>
+                  <option value="B">B</option>
+                  <option value="C">C</option>
+                </select>
+              </div>
+            </div>
+            <button class="primary-btn filter-btn" onclick="loadStudentLookup()">
+              <i class="fas fa-filter"></i> Apply Filters
+            </button>
           </div>
         </div>
         
+        <!-- Results Table Card -->
         <div class="card table-card" id="lookup-result" style="display: none">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Roll No</th>
-                <th>Name</th>
-                <th>Branch</th>
-                <th>Year / Sem</th>
-                <th>Section</th>
-                <th>Phone</th>
-                <th>Status</th>
-                <th>Fee Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody id="lookup-body"></tbody>
-          </table>
+          <div class="table-header">
+            <h3><i class="fas fa-list"></i> Student Results</h3>
+          </div>
+          <div class="table-wrapper" style="overflow-x: auto;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Roll No</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Parent Mobile</th>
+                  <th>Fee Status</th>
+                  <th>Residence</th>
+                  <th>Alert</th>
+                  <th>Notify</th>
+                </tr>
+              </thead>
+              <tbody id="lookup-body"></tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
 
-    <div id="alertModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
-      <div class="modal-content" style="background:#fff; padding:25px; border-radius:8px; width:450px; max-width:90%; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-        <h3 style="margin-bottom: 15px; color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px;">
-          <i class="fas fa-exclamation-triangle" style="color: #e74c3c;"></i> Send Student Alert
+    <div id="studentAlertModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+      <div class="modal-content" style="background:#fff; padding:24px; border-radius:10px; width:460px; max-width:92%; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+        <h3 style="margin-bottom: 12px; color: #0d47a1; border-bottom: 1px solid #eee; padding-bottom: 8px;">
+          <i class="fas fa-paper-plane" style="color: #0d47a1;"></i> Send Student Alert
         </h3>
-        
-        <div class="form-group" style="margin-top:15px;">
-          <label style="display:block; font-weight:600; margin-bottom:5px; color:#555;">Student Roll No</label>
-          <input type="text" id="alert-target-roll" readonly style="width:100%; padding:10px; border: 1px solid #ccc; border-radius: 4px; background: #f0f0f0; color:#555;">
+
+        <div class="form-group" style="margin-top:12px;">
+          <label style="display:block; font-weight:600; margin-bottom:5px; color:#555;">Student</label>
+          <input type="text" id="alert-student-name" readonly style="width:100%; padding:10px; border: 1px solid #ccc; border-radius: 6px; background: #f6f7fb; color:#555;">
         </div>
-        
-        <div class="form-group" style="margin-top:15px;">
-          <label style="display:block; font-weight:600; margin-bottom:5px; color:#555;">Severity</label>
-          <select id="alert-severity" style="width:100%; padding:10px; border: 1px solid #ccc; border-radius: 4px;">
-            <option value="INFO">Info (Blue)</option>
-            <option value="WARNING" selected>Warning (Yellow)</option>
-            <option value="CRITICAL">Critical (Red)</option>
+
+        <div class="form-group" style="margin-top:12px;">
+          <label style="display:block; font-weight:600; margin-bottom:5px; color:#555;">Email</label>
+          <input type="text" id="alert-student-email" readonly style="width:100%; padding:10px; border: 1px solid #ccc; border-radius: 6px; background: #f6f7fb; color:#555;">
+        </div>
+
+        <div class="form-group" style="margin-top:12px;">
+          <label style="display:block; font-weight:600; margin-bottom:5px; color:#555;">Category</label>
+          <select id="alert-category" style="width:100%; padding:10px; border: 1px solid #ccc; border-radius: 6px;">
+            <option value="GENERAL" selected>General</option>
+            <option value="ACADEMIC">Academic</option>
+            <option value="FEES">Fees</option>
+            <option value="HOSTEL">Hostel</option>
+            <option value="LIBRARY">Library</option>
           </select>
         </div>
-        
-        <div class="form-group" style="margin-top:15px;">
+
+        <div class="form-group" style="margin-top:12px;">
+          <label style="display:block; font-weight:600; margin-bottom:5px; color:#555;">Priority</label>
+          <select id="alert-priority" style="width:100%; padding:10px; border: 1px solid #ccc; border-radius: 6px;">
+            <option value="NORMAL" selected>Normal</option>
+            <option value="IMPORTANT">Important</option>
+            <option value="CRITICAL">Critical</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="margin-top:12px;">
           <label style="display:block; font-weight:600; margin-bottom:5px; color:#555;">Title</label>
-          <input type="text" id="alert-title" placeholder="e.g., Low Attendance Warning" style="width:100%; padding:10px; border: 1px solid #ccc; border-radius: 4px;">
+          <input type="text" id="alert-title" placeholder="e.g., Attendance Warning" style="width:100%; padding:10px; border: 1px solid #ccc; border-radius: 6px;">
         </div>
-        
-        <div class="form-group" style="margin-top:15px;">
+
+        <div class="form-group" style="margin-top:12px;">
           <label style="display:block; font-weight:600; margin-bottom:5px; color:#555;">Message</label>
-          <textarea id="alert-message" rows="4" style="width:100%; padding:10px; border: 1px solid #ccc; border-radius: 4px; resize:vertical;" placeholder="Type your message here..."></textarea>
+          <textarea id="alert-message" rows="4" style="width:100%; padding:10px; border: 1px solid #ccc; border-radius: 6px; resize:vertical;" placeholder="Type your message here..."></textarea>
         </div>
-        
-        <div style="margin-top:25px; display:flex; justify-content:space-between;">
-          <button class="secondary-btn" onclick="closeAlertModal()" style="padding: 10px 20px;">Cancel</button>
-          <button class="primary-btn" onclick="sendStudentAlert()" style="padding: 10px 20px; background-color: #e74c3c; border:none;">Send Alert</button>
+
+        <input type="hidden" id="alert-student-batch" />
+        <input type="hidden" id="alert-student-branch" />
+        <input type="hidden" id="alert-student-section" />
+
+        <div style="margin-top:20px; display:flex; justify-content:space-between;">
+          <button class="secondary-btn" onclick="closeStudentAlertModal()" style="padding: 10px 20px;">Cancel</button>
+          <button class="primary-btn" onclick="sendStudentAlert()" style="padding: 10px 20px; background-color: #0d47a1; border:none;">Send Alert</button>
         </div>
       </div>
     </div>
+    <!-- Risk Assessment Modal -->
+    <div id="riskModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+      <div class="modal-content" style="background:#fff; padding:24px; border-radius:10px; width:500px; max-width:92%; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom: 2px solid #eee; padding-bottom:15px;">
+          <h3 style="margin:0; color: #333;">
+            <i class="fas fa-exclamation-circle" style="margin-right:10px;"></i> Academic Risk Assessment
+          </h3>
+          <button onclick="closeRiskModal()" style="background:none; border:none; font-size:24px; cursor:pointer; color:#999;">×</button>
+        </div>
 
+        <div style="margin-bottom:15px;">
+          <label style="display:block; font-weight:600; margin-bottom:8px; color:#555;">Student:</label>
+          <div id="risk-student-name" style="font-size:16px; color:#0d47a1; font-weight:600;"></div>
+        </div>
+
+        <div id="risk-level-container" style="margin-bottom:15px; padding:12px; border-radius:6px;">
+          <label style="display:block; font-weight:600; margin-bottom:8px; color:#555;">Risk Level:</label>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div id="risk-badge" style="padding:8px 16px; border-radius:20px; font-weight:600; min-width:100px; text-align:center; color:#fff;"></div>
+            <span id="risk-probability" style="font-size:18px; font-weight:600; color:#333;"></span>
+          </div>
+        </div>
+
+        <div style="margin-bottom:15px; background:#f5f5f5; padding:12px; border-radius:6px;">
+          <label style="display:block; font-weight:600; margin-bottom:8px; color:#555;">Analysis & Explanation:</label>
+          <p id="risk-explanation" style="margin:0; color:#666; line-height:1.6;"></p>
+        </div>
+
+        <div style="margin-bottom:15px; background:#f9f9f9; padding:12px; border-radius:6px;">
+          <label style="display:block; font-weight:600; margin-bottom:10px; color:#555;">Risk Factors Breakdown:</label>
+          <div id="risk-factors" style="display:grid; gap:8px;"></div>
+        </div>
+
+        <div style="margin-top:20px; display:flex; justify-content:space-between; gap:10px;">
+          <button class="secondary-btn" onclick="closeRiskModal()" style="padding: 10px 20px; flex:1;">Close</button>
+          <button class="primary-btn" onclick="sendAlertFromRisk()" style="padding: 10px 20px; flex:1; background-color: #e74c3c; border:none;">Send Alert to Student</button>
+        </div>
+      </div>
+    </div>
+    <script src="../../config.js"></script>
     <script src="../js/main.js"></script>
     <script src="../js/students.js"></script>
   </body>
-</html>
 </html>

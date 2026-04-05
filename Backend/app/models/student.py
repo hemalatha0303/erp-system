@@ -6,8 +6,9 @@ class Student(Base):
 
     id = Column(Integer, primary_key=True)
     user_email = Column(String(100), unique=True, nullable=False)
+    personal_email = Column(String(100))
 
-    roll_no = Column(String(20))
+    roll_no = Column(String(20), unique=True)
     first_name = Column(String(50))
     last_name = Column(String(50))
     gender = Column(String(10))
@@ -18,5 +19,13 @@ class Student(Base):
     address = Column(Text)
     parentname = Column(String(100))
 
-    residence_type = Column(String(20))  
+    residence_type = Column(String(20))
+    
+    # Additional fields from academic profile
+    branch = Column(String(20))
+    section = Column(String(5))
+    batch = Column(String(20))
+    course = Column(String(20))
+    quota = Column(String(20))
+    admission_date = Column(Date)  
     

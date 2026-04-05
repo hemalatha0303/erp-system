@@ -39,16 +39,39 @@ async function bulkUserSignup() {
           Authorization: `Bearer ${token}`,
         },
         body: formData,
-      },
+      }
     );
 
-    const data = await res.json();
+    const rawText = await res.text();
+    let data = {};
+    try {
+      data = rawText ? JSON.parse(rawText) : {};
+    } catch (e) {
+      data = { message: rawText };
+    }
 
     if (res.ok) {
-      alert(`Success! Created ${data.count} users.`);
-      displayCredentials(data.credentials);
+      const createdUsers = data.created_users || data.credentials || [];
+      const skippedUsers = data.skipped_users || [];
+      const createdCount =
+        data.created_count !== undefined
+          ? data.created_count
+          : createdUsers.length;
+      alert(`Success! Created ${createdCount} users.`);
+      displayCredentials(createdUsers, skippedUsers);
     } else {
-      alert("Error: " + (data.detail || "Failed to create users"));
+      let errMsg = data.detail || data.message || rawText || "Failed to create users";
+      if (typeof errMsg === "object" && errMsg !== null) {
+        const dupes = errMsg.duplicates || [];
+        if (dupes.length > 0) {
+          const preview = dupes.slice(0, 10).join(", ");
+          const more = dupes.length > 10 ? ` (+${dupes.length - 10} more)` : "";
+          errMsg = `${errMsg.message || "Duplicate emails found"}: ${preview}${more}`;
+        } else {
+          errMsg = errMsg.message || "Request failed";
+        }
+      }
+      alert("Error: " + errMsg);
     }
   } catch (error) {
     console.error(error);
@@ -59,31 +82,48 @@ async function bulkUserSignup() {
   }
 }
 
-function displayCredentials(credentials) {
+function displayCredentials(credentials, skipped = []) {
   generatedCredentials = credentials;
 
   const container = document.getElementById("results-container");
   const tbody = document.getElementById("credentials-list");
+  const processingInfo = document.getElementById("processing-info");
+  const processingText = document.getElementById("processing-text");
+  
   tbody.innerHTML = "";
 
-  credentials.forEach((user, index) => {
-    const row = `
-            <tr>
-                <td>${index + 1}</td>
-                <td>${user.email}</td>
-                <td>${user.password}</td>
-            </tr>
-        `;
-    tbody.innerHTML += row;
-  });
+  if (credentials.length === 0) {
+    processingInfo.style.display = "block";
+    if (skipped.length > 0) {
+      const sample = skipped.slice(0, 5).map((s) => `${s.email}: ${s.reason}`).join(" | ");
+      const more = skipped.length > 5 ? ` (+${skipped.length - 5} more)` : "";
+      processingText.textContent = `No new accounts created. Skipped: ${sample}${more}`;
+    } else {
+      processingText.textContent = "No new @vvit.net email accounts were created. Check if emails already exist or are not @vvit.net format.";
+    }
+    tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 20px;">No credentials to display</td></tr>';
+  } else {
+    credentials.forEach((user, index) => {
+      const row = `
+          <tr>
+              <td>${index + 1}</td>
+              <td>${user.email}</td>
+              <td>${user.password}</td>
+          </tr>
+      `;
+      tbody.innerHTML += row;
+    });
+  }
 
   container.style.display = "block";
-
   container.scrollIntoView({ behavior: "smooth" });
 }
 
 function downloadCredentials() {
-  if (generatedCredentials.length === 0) return;
+  if (generatedCredentials.length === 0) {
+    alert("No credentials to download.");
+    return;
+  }
 
   let csvContent = "data:text/csv;charset=utf-8,";
   csvContent += "Email,Password\n";

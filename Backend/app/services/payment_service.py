@@ -1,6 +1,7 @@
-from datetime import date
+from datetime import date, datetime
 from decimal import Decimal
 from collections import defaultdict
+import uuid
 
 from app.models.student import Student
 from app.models.academic import Academic
@@ -73,7 +74,11 @@ def get_payment_details_by_roll(db, roll_no: str):
 
 
 def update_student_payment(db, req, admin_email):
-
+    """
+    Creates a NEW transaction record for each payment submission.
+    Each payment is recorded as a separate transaction with a unique receipt ID.
+    """
+    
     academic = (
         db.query(Academic)
         .filter(Academic.srno == req.roll_no)
@@ -85,6 +90,8 @@ def update_student_payment(db, req, admin_email):
         raise Exception("Academic record not found")
 
     student = db.query(Student).filter(Student.roll_no == req.roll_no).first()
+    if not student:
+        raise Exception("Student not found")
 
     fees = (
         db.query(FeeStructure)
@@ -100,33 +107,38 @@ def update_student_payment(db, req, admin_email):
     if fee_type == "TUTION":
         fee_type = "TUITION"
 
-    payment = (
-        db.query(Payment)
-        .filter(
-            Payment.srno == req.roll_no,
-            Payment.fee_type == fee_type,
-            Payment.year == academic.year,
-        )
-        .first()
+    # Generate unique receipt ID with timestamp to ensure uniqueness for multiple payments
+    receipt_id = f"REC-{req.roll_no}-{datetime.now().strftime('%Y%m%d%H%M%S')}-{str(uuid.uuid4())[:8]}"
+
+    # Create a NEW payment record instead of updating existing one
+    # This ensures each transaction is recorded separately
+    new_payment = Payment(
+        receipt_id=receipt_id,
+        srno=req.roll_no,
+        student_email=student.user_email,
+        fee_type=fee_type,
+        amount_paid=Decimal(str(req.amount)),
+        payment_mode=req.payment_mode,
+        payment_date=date.today(),
+        updated_by=admin_email,
+        year=academic.year,
+        semester=academic.semester,
+        status="PENDING"
     )
 
-    if not payment:
-        raise Exception(f"Payment record not found for {fee_type}")
+    # Store payment details if provided
+    if hasattr(req, 'payment_details') and req.payment_details:
+        import json
+        new_payment.description = json.dumps(req.payment_details)
 
-    payment.amount_paid = Decimal(payment.amount_paid) + Decimal(str(req.amount))
-    payment.payment_mode = req.payment_mode
-    payment.payment_date = date.today()
-    payment.updated_by = admin_email
-
-    total_fee = {
-        "TUITION": fees.tuition_fee,
-        "BUS": fees.bus_fee,
-        "HOSTEL": fees.hostel_fee,
-    }[fee_type]
-
-    payment.status = "PAID" if payment.amount_paid >= total_fee else "PENDING"
-
+    db.add(new_payment)
     db.commit()
+    db.refresh(new_payment)
+
+    return {
+        "receipt_id": receipt_id,
+        "message": "Payment recorded successfully as a new transaction"
+    }
 
 
 def get_student_payment_details(db, student_email: str, semester: int):
@@ -181,6 +193,19 @@ def get_student_payment_details(db, student_email: str, semester: int):
         paid_map[p.fee_type] += p.amount_paid
 
         if p.amount_paid > 0:
+            # Parse payment details from description
+            payment_details_str = ""
+            if p.description:
+                try:
+                    import json
+                    details = json.loads(p.description)
+                    if p.payment_mode == "UPI" and details:
+                        payment_details_str = f"{details.get('transaction_id', '')}, {details.get('phone_number', '')}, {details.get('person_name', '')}"
+                    elif p.payment_mode == "DD" and details:
+                        payment_details_str = f"{details.get('account_number', '')}, {details.get('mobile_number', '')}"
+                except:
+                    pass
+            
             transactions.append(
                 {
                     "date": p.payment_date.strftime("%d-%b-%Y"),
@@ -188,6 +213,9 @@ def get_student_payment_details(db, student_email: str, semester: int):
                     "ref": p.receipt_id,
                     "amount": float(p.amount_paid),
                     "remBalance": float(fee_map[p.fee_type] - paid_map[p.fee_type]),
+                    "payment_mode": p.payment_mode or "Cash",
+                    "payment_details": payment_details_str,
+                    "fee_type": p.fee_type,
                 }
             )
 

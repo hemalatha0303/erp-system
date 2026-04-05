@@ -10,8 +10,8 @@ def update_hod_profile(db: Session, email: str, data):
     if not hod:
         return None
 
-    
-    for key, value in data.dict(exclude_unset=True).items():
+    payload = data.dict(exclude_unset=True)
+    for key, value in payload.items():
         setattr(hod, key, value) 
 
     db.commit()

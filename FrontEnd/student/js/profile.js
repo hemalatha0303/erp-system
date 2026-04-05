@@ -34,17 +34,24 @@ document.addEventListener("DOMContentLoaded", async () => {
       `  ${academics.year ?? "-"} / ${academics.semester ?? "-"} `;
 
     document.getElementById("p-section").innerText = academics.section ?? "-";
+    document.getElementById("p-batch").innerText = profile.batch ?? "-";
+    document.getElementById("p-course").innerText = profile.course ?? "-";
     // document.getElementById("p-teacher").innerText = "-";
 
     document.getElementById("p-dob").innerText = profile.date_of_birth ?? "-";
-    document.getElementById("p-gender").innerText = "-";
+    document.getElementById("p-gender").innerText = profile.gender ?? "-";
     document.getElementById("p-blood").innerText = profile.blood_group ?? "-";
     document.getElementById("p-parent").innerText = profile.parentname ?? "-";
+    document.getElementById("p-residence").innerText = profile.residence_type ?? "-";
 
     document.getElementById("p-email").innerText = academics.user_email ?? "-";
-    document.getElementById("p-mobile").innerText = "-";
-    document.getElementById("p-pmobile").innerText = "-";
+    document.getElementById("p-persemail").innerText = profile.personal_mail ?? "-";
+    document.getElementById("p-mobile").innerText = profile.mobile_no ?? "-";
+    document.getElementById("p-pmobile").innerText = profile.parent_mobile_no ?? "-";
     document.getElementById("p-address").innerText = profile.address ?? "-";
+    
+    document.getElementById("p-quota").innerText = profile.quota ?? "-";
+    document.getElementById("p-admdate").innerText = profile.admission_date ?? "-";
   } catch (err) {
     console.error(err);
     alert("Failed to load profile data");

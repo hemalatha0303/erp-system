@@ -2,6 +2,7 @@ from fastapi import FastAPI
 
 from app.routers.auth import router as auth_router
 from app.routers.student import router as student_router
+from app.routers.student_grades import router as student_grades_router
 from app.routers.faculty import router as faculty_router
 from app.routers.academic import router as academic_router
 from app.routers.admin_accounts import router as admin_accounts_router
@@ -37,6 +38,7 @@ app.add_middleware(
 
 app.include_router(auth_router)
 app.include_router(student_router)
+app.include_router(student_grades_router)
 app.include_router(faculty_router)
 app.include_router(academic_router)
 app.include_router(admin_accounts_router)   

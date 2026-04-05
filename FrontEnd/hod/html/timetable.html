@@ -28,8 +28,17 @@
             </select>
           </div>
           <div class="filters-row" style="margin-top: 10px">
-            <input id="tt-year" placeholder="Year" type="number" />
-            <input id="tt-sem" placeholder="Semester" type="number" />
+            <input id="tt-year" placeholder="Batch e.g., 2022-26" type="text" />
+            <select id="tt-sem">
+              <option value="1">Sem 1</option>
+              <option value="2">Sem 2</option>
+              <option value="3">Sem 3</option>
+              <option value="4">Sem 4</option>
+              <option value="5">Sem 5</option>
+              <option value="6">Sem 6</option>
+              <option value="7">Sem 7</option>
+              <option value="8">Sem 8</option>
+            </select>
             <div class="inline-group">
               <input
                 id="tt-branch"
@@ -42,6 +51,7 @@
 
             <div class="inline-group">
               <input
+                class="class-only"
                 id="tt-sec"
                 type="text"
                 placeholder="Enter section"
