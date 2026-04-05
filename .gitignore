@@ -1,6 +1,18 @@
 node_modules/
 ExcelData/
 venv/
+.venv/
 __pycache__/
 *.pyc
 .env
+.env.local
+*.log
+.DS_Store
+.idea/
+.vscode/
+
+# Uploaded files (timetables, etc.)
+Backend/uploads/
+
+# ML artifacts are optional; uncomment to exclude from git
+# Backend/app/ml_models/*.pkl
