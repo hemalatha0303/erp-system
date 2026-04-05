@@ -2,7 +2,7 @@ from fastapi import APIRouter, UploadFile, File, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from app.schemas.notification import NotificationCreate
-from app.utils.validators import validate_vvit_and_format
+from app.utils.validators import validate_vvit_and_format, validate_email_format
 from app.services.notification_service import create_notification
 from app.services.notification_service import create_notification
 from app.schemas.hostel import (
@@ -544,7 +544,7 @@ def send_notification(
 
     if not validate_vvit_and_format(current_user["sub"]):
         raise HTTPException(status_code=400, detail="Sender must be a @vvit.net email")
-    if data.target_email and not validate_vvit_and_format(data.target_email):
-        raise HTTPException(status_code=400, detail="Target email must be @vvit.net")
+    if data.target_email and not validate_email_format(data.target_email):
+        raise HTTPException(status_code=400, detail="Invalid target email format")
 
     return create_notification(db, data, current_user["sub"], current_user["role"])

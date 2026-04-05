@@ -15,7 +15,7 @@ from app.utils.marks_calculator import calc_mid_total
 from app.models.payment import Payment
 from app.schemas.hod import HODProfileResponse, HODProfileUpdate
 from app.schemas.notification import NotificationCreate
-from app.utils.validators import validate_vvit_and_format
+from app.utils.validators import validate_vvit_and_format, validate_email_format
 from app.services.notification_service import create_notification, get_hod_notifications
 from app.services.hod_service import get_hod_profile, update_hod_profile
 from app.services.attendance_service import (
@@ -83,8 +83,8 @@ def send_hod_notification(
         raise HTTPException(status_code=403, detail="Only HOD allowed")
     if not validate_vvit_and_format(user["sub"]):
         raise HTTPException(status_code=400, detail="Sender must be a @vvit.net email")
-    if data.target_email and not validate_vvit_and_format(data.target_email):
-        raise HTTPException(status_code=400, detail="Target email must be @vvit.net")
+    if data.target_email and not validate_email_format(data.target_email):
+        raise HTTPException(status_code=400, detail="Invalid target email format")
     return create_notification(db, data, user["sub"], user["role"])
 
 @router.post("/timetable/upload")

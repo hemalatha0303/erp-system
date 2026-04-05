@@ -1,0 +1,42 @@
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: erp_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - erp_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    image: erp-backend:latest
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: mysql+pymysql://root:root@mysql:3306/erp_db
+      JWT_SECRET: ${JWT_SECRET:-change-this-in-production}
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.frontend
+    image: erp-frontend:latest
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+
+volumes:
+  erp_mysql_data:
