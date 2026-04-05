@@ -138,12 +138,13 @@ function renderRows(tableBody, students, emptyMessage) {
     tableBody.innerHTML =
       `<tr><td colspan='9' style='text-align:center; padding:20px; color:#999;'><i class='fas fa-search'></i> ${emptyMessage}</td></tr>`;
     return;
+    
   }
 
   tableBody.innerHTML = "";
   students.forEach((student) => {
     const name = `${student.first_name || ""} ${student.last_name || ""}`.trim() || "-";
-    const email = student.email || student.user_email || "-";
+    const email = (student.email || student.user_email || student.personal_email || "").trim();
     const phone = student.mobile_no || "-";
     const parentMobile = student.parent_mobile_no || "-";
     const residenceLabel = formatResidence(student.residence_type);
@@ -153,28 +154,28 @@ function renderRows(tableBody, students, emptyMessage) {
     const section = student.section || "";
 
     const safeName = (name || "-").replace(/"/g, "&quot;");
-    const safeEmail = (email || "-").replace(/"/g, "&quot;");
+    const safeEmail = email.replace(/"/g, "&quot;");
     const safeBatch = (batch || "").replace(/"/g, "&quot;");
     const safeBranch = (branch || "").replace(/"/g, "&quot;");
     const safeSection = (section || "").replace(/"/g, "&quot;");
     const safeRollNo = (student.roll_no || "").replace(/"/g, "&quot;");
-
+    console.log("Student object:", student);
     const row = `
       <tr>
         <td style="font-weight: 600; color: #0d47a1;">${student.roll_no || "-"}</td>
         <td>${name}</td>
-        <td style="word-break: break-all;">${email}</td>
+        <td style="word-break: break-all;">${email || "-"}</td>
         <td>${phone}</td>
         <td>${parentMobile}</td>
         <td><span style="padding: 6px 10px; border-radius: 6px; font-weight: 600; background: ${fee.bg}; color: ${fee.color};">${fee.label}</span></td>
         <td>${residenceLabel}</td>
         <td>
-          <button class="risk-btn" data-roll-no="${safeRollNo}" data-name="${safeName}">
+          <button class="risk-btn" data-roll-no="${safeRollNo}" data-name="${safeName}" data-semester="${student.semester != null ? student.semester : 1}">
             <i class="fas fa-heartbeat"></i> Check Risk
           </button>
         </td>
         <td>
-          <button class="alert-btn" data-name="${safeName}" data-email="${safeEmail}" data-batch="${safeBatch}" data-branch="${safeBranch}" data-section="${safeSection}">
+          <button class="alert-btn" data-roll-no="${safeRollNo}" data-name="${safeName}" data-email="${safeEmail}" data-batch="${safeBatch}" data-branch="${safeBranch}" data-section="${safeSection}">
             <i class="fas fa-paper-plane"></i> Send
           </button>
         </td>
@@ -213,7 +214,7 @@ async function searchStudent() {
       const roll = (student.roll_no || "").toUpperCase();
       return roll.includes(searchText) || fullName.includes(searchText);
     });
-
+    console.log("Filtered students:", filtered);
     renderRows(tableBody, filtered, "No students found for this search");
   } catch (error) {
     console.error("Student Search Error:", error);
@@ -265,12 +266,19 @@ function bindAlertButtons(tableBody) {
     if (!btn) return;
 
     const name = btn.getAttribute("data-name") || "Student";
-    const email = btn.getAttribute("data-email") || "";
+    const email = (btn.getAttribute("data-email") || "").trim();
+    const roll = (btn.getAttribute("data-roll-no") || "").trim();
     const batch = btn.getAttribute("data-batch") || "";
     const branch = btn.getAttribute("data-branch") || "";
     const section = btn.getAttribute("data-section") || "";
 
-    openStudentAlertModal({ name, email, batch, branch, section });
+    if (!email && !roll) {
+      alert("No email or roll number available for this student.");
+      return;
+    }
+
+    console.log("Clicked student:", { name, email, roll });
+    openStudentAlertModal({ name, email, roll_no: roll, batch, branch, section });
   });
   alertHandlerBound = true;
 }
@@ -281,6 +289,8 @@ function openStudentAlertModal(student) {
 
   document.getElementById("alert-student-name").value = student.name || "Student";
   document.getElementById("alert-student-email").value = student.email || "";
+  const rollEl = document.getElementById("alert-student-roll");
+  if (rollEl) rollEl.value = student.roll_no || "";
   document.getElementById("alert-student-batch").value = student.batch || "";
   document.getElementById("alert-student-branch").value = student.branch || "";
   document.getElementById("alert-student-section").value = student.section || "";
@@ -300,6 +310,11 @@ function closeStudentAlertModal() {
   }
 }
 
+function isValidStudentEmail(email) {
+  if (!email || email === "-") return false;
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
 async function sendStudentAlert() {
   const token = localStorage.getItem("token");
   if (!token) {
@@ -308,6 +323,8 @@ async function sendStudentAlert() {
   }
 
   const email = document.getElementById("alert-student-email").value.trim();
+  const rollEl = document.getElementById("alert-student-roll");
+  const roll = rollEl ? rollEl.value.trim() : "";
   const batch = document.getElementById("alert-student-batch").value.trim();
   const branch = document.getElementById("alert-student-branch").value.trim();
   const section = document.getElementById("alert-student-section").value.trim();
@@ -316,13 +333,13 @@ async function sendStudentAlert() {
   const category = document.getElementById("alert-category").value;
   const priority = document.getElementById("alert-priority").value;
 
-  if (!email) {
-    alert("Student email is missing.");
+  if (!isValidStudentEmail(email) && !roll) {
+    alert("Enter a valid student email or ensure roll number is set (reload the student list).");
     return;
   }
 
   if (!batch) {
-    alert("Student batch is missing. Please refresh the list.");
+    alert("Student batch is missing. Please open Send from the student row or risk panel so batch is filled.");
     return;
   }
 
@@ -331,35 +348,69 @@ async function sendStudentAlert() {
     return;
   }
 
-  const payload = {
-    title,
-    message,
-    target_role: "STUDENT",
-    batch,
-    branch: branch || null,
-    section: section || null,
-    target_email: email,
-    category,
-    priority,
-  };
+  const emailOk = isValidStudentEmail(email);
+  let notificationOk = false;
+  let alertOk = false;
 
   try {
-    const response = await fetch(`${API_BASE}/faculty/notifications`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    });
-
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(data.detail || data.message || "Failed to send alert");
+    if (emailOk) {
+      const payload = {
+        title,
+        message,
+        target_role: "STUDENT",
+        batch,
+        branch: branch || null,
+        section: section || null,
+        target_email: email,
+        category,
+        priority,
+      };
+      const response = await fetch(`${API_BASE}/faculty/notifications`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.detail || data.message || "Failed to send notification");
+      }
+      notificationOk = true;
+    } else if (roll) {
+      const severity =
+        priority === "CRITICAL" ? "CRITICAL" : priority === "IMPORTANT" ? "WARNING" : "WARNING";
+      const ar = await fetch(`${API_BASE}/faculty/alerts/send`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          student_roll: roll,
+          title,
+          message,
+          severity,
+        }),
+      });
+      const alertData = await ar.json();
+      if (!ar.ok) {
+        throw new Error(alertData.detail || alertData.message || "Failed to save student alert");
+      }
+      alertOk = true;
     }
 
-    alert("Alert sent successfully!");
-    closeStudentAlertModal();
+    if (notificationOk || alertOk) {
+      alert(
+        notificationOk
+          ? "Message delivered to the student Notifications inbox."
+          : "Message saved for the student (visible under Notifications → Alerts when they log in).",
+      );
+      closeStudentAlertModal();
+    } else {
+      alert("Could not deliver message: add a valid email or roll number.");
+    }
   } catch (error) {
     console.error("Alert Send Error:", error);
     alert("Error: " + (error.message || "Failed to send alert"));
@@ -391,12 +442,13 @@ function bindRiskButtons(tableBody) {
 
     const rollNo = btn.getAttribute("data-roll-no");
     const name = btn.getAttribute("data-name");
+    const semester = parseInt(btn.getAttribute("data-semester") || "1", 10) || 1;
 
-    await showRiskAssessment(rollNo, name);
+    await showRiskAssessment(rollNo, name, semester);
   });
 }
 
-async function showRiskAssessment(rollNo, studentName) {
+async function showRiskAssessment(rollNo, studentName, semester) {
   const modal = document.getElementById("riskModal");
   if (!modal) return;
 
@@ -408,7 +460,6 @@ async function showRiskAssessment(rollNo, studentName) {
   modal.style.display = "flex";
 
   try {
-    const semester = 1; // Default semester, can be made dynamic
     const riskData = await fetchStudentRisk(rollNo, semester);
 
     if (!riskData || riskData.status !== "success") {
@@ -432,51 +483,53 @@ function populateRiskModal(riskData) {
   const explanation = riskData.explanation || "No explanation available";
   const factors = riskData.factors || {};
 
-  // Update student name
   document.getElementById("risk-student-name").textContent = `${studentName} (${rollNo})`;
 
-  // Update risk level badge
-  let bgColor = "#388e3c"; // GREEN
+  // Red = high, Yellow = medium, Green = low
+  let bgColor = "#2e7d32";
   let textColor = "#fff";
   let icon = "fa-check-circle";
+  let accent = "#2e7d32";
 
   if (riskLevel === "HIGH") {
-    bgColor = "#d32f2f"; // RED
+    bgColor = "#c62828";
+    textColor = "#fff";
     icon = "fa-exclamation-circle";
+    accent = "#c62828";
   } else if (riskLevel === "MEDIUM") {
-    bgColor = "#f57c00"; // ORANGE
+    bgColor = "#fdd835";
+    textColor = "#333";
     icon = "fa-exclamation-triangle";
+    accent = "#f9a825";
   }
 
-  const badgeHtml = `<div style="padding:10px 16px; border-radius:20px; font-weight:600; background:${bgColor}; color:#fff; display:inline-block;">
+  const badgeHtml = `<div style="padding:10px 16px; border-radius:20px; font-weight:600; background:${bgColor}; color:${textColor}; display:inline-block;">
     <i class="fas ${icon}" style="margin-right:8px;"></i>${riskLevel}
   </div>`;
-  
+
   document.getElementById("risk-level-container").innerHTML = `<label style="display:block; font-weight:600; margin-bottom:8px; color:#555;">Risk Level:</label>
-    <div style="display:flex; align-items:center; gap:10px;">
+    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
       ${badgeHtml}
       <span id="risk-probability" style="font-size:18px; font-weight:600; color:#333;">${probability}% failure risk</span>
     </div>`;
 
-  // Update explanation
   document.getElementById("risk-explanation").textContent = explanation;
 
-  // Update factors breakdown
-  let factorsHtml = `
+  const factorsHtml = `
     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-      <div style="padding:8px; background:#fff; border-left: 4px solid #0d47a1; border-radius:4px;">
+      <div style="padding:8px; background:#fff; border-left: 4px solid ${accent}; border-radius:4px;">
         <div style="font-size:12px; color:#999;">Attendance</div>
         <div style="font-size:16px; font-weight:600; color:#333;">${factors.attendance || 0}%</div>
       </div>
-      <div style="padding:8px; background:#fff; border-left: 4px solid #0d47a1; border-radius:4px;">
+      <div style="padding:8px; background:#fff; border-left: 4px solid ${accent}; border-radius:4px;">
         <div style="font-size:12px; color:#999;">Backlogs</div>
         <div style="font-size:16px; font-weight:600; color:#333;">${factors.backlogs || 0}</div>
       </div>
-      <div style="padding:8px; background:#fff; border-left: 4px solid #0d47a1; border-radius:4px;">
+      <div style="padding:8px; background:#fff; border-left: 4px solid ${accent}; border-radius:4px;">
         <div style="font-size:12px; color:#999;">Prev SGPA</div>
         <div style="font-size:16px; font-weight:600; color:#333;">${factors.previous_sgpa || 0}/10</div>
       </div>
-      <div style="padding:8px; background:#fff; border-left: 4px solid #0d47a1; border-radius:4px;">
+      <div style="padding:8px; background:#fff; border-left: 4px solid ${accent}; border-radius:4px;">
         <div style="font-size:12px; color:#999;">Mid Score Avg</div>
         <div style="font-size:16px; font-weight:600; color:#333;">${factors.mid_score_average || 0}/30</div>
       </div>
@@ -499,17 +552,24 @@ async function sendAlertFromRisk() {
     return;
   }
 
-  // Pre-fill the alert modal with risk-specific data
-  const rollNo = currentRiskData.roll_no;
+  const rollNo = currentRiskData.roll_no || "";
   const studentName = currentRiskData.student_name;
   const riskLevel = currentRiskData.risk_level;
   const probability = currentRiskData.risk_probability;
+  const studentEmail = (currentRiskData.student_email || "").trim();
+  const batch = (currentRiskData.batch || "").trim();
+  const branch = (currentRiskData.branch || "").trim();
+  const section = (currentRiskData.section || "").trim();
 
-  // Close risk modal and open alert modal
   closeRiskModal();
 
-  // Populate alert modal
   document.getElementById("alert-student-name").value = studentName || "Student";
+  const rollEl = document.getElementById("alert-student-roll");
+  if (rollEl) rollEl.value = rollNo;
+  document.getElementById("alert-student-email").value = studentEmail;
+  document.getElementById("alert-student-batch").value = batch;
+  document.getElementById("alert-student-branch").value = branch;
+  document.getElementById("alert-student-section").value = section;
   document.getElementById("alert-title").value = `Academic Risk Alert - ${riskLevel} Risk (${probability}%)`;
   document.getElementById("alert-message").value = `
 Student Analysis:

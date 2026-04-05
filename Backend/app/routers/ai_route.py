@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from app.core.dependencies import get_current_user
 from app.core.database import get_db
 from app.models.student import Student
+from app.models.academic import Academic
 from app.models.internal_marks import InternalMarks
 from app.models.external_marks import ExternalMarks
 from app.models.course_grade import SemesterGrade
@@ -12,6 +13,49 @@ from app.services.attendance_service import get_semester_attendance_summary
 from app.services.inference import predict_student_risk_structured
 
 router = APIRouter(prefix="/ai", tags=["AI Services"])
+
+MID_CAP = 30.0
+
+
+def _clamp_mid_component(value) -> float:
+    try:
+        v = float(value)
+    except (TypeError, ValueError):
+        return 0.0
+    return max(0.0, min(MID_CAP, v))
+
+
+def _internal_mark_features(internals: list):
+    """
+    Mid exams are out of 30. Clamp stored values to handle bad data.
+    Returns avg_mid1, avg_mid2 (for the ML model) and mid_score_average (for UI, out of 30).
+    """
+    if not internals:
+        return 0.0, 0.0, 0.0
+
+    m1_list = []
+    m2_list = []
+    final_list = []
+    combined_per_subject = []
+
+    for row in internals:
+        m1 = _clamp_mid_component(row.mid1)
+        m2 = _clamp_mid_component(row.mid2)
+        m1_list.append(m1)
+        m2_list.append(m2)
+        if row.final_internal_marks is not None:
+            final_list.append(_clamp_mid_component(row.final_internal_marks))
+        combined_per_subject.append((m1 + m2) / 2.0)
+
+    avg_mid1 = sum(m1_list) / len(m1_list)
+    avg_mid2 = sum(m2_list) / len(m2_list)
+
+    if final_list:
+        mid_avg = sum(final_list) / len(final_list)
+    else:
+        mid_avg = sum(combined_per_subject) / len(combined_per_subject)
+
+    return avg_mid1, avg_mid2, min(MID_CAP, mid_avg)
 
 
 @router.get("/student/attendance/ai-advice")
@@ -92,15 +136,7 @@ def faculty_student_risk(
         .all()
     )
 
-    avg_mid1 = 0.0
-    avg_mid2 = 0.0
-    if internals:
-        m1 = [float(i.mid1) for i in internals if i.mid1 is not None]
-        m2 = [float(i.mid2) for i in internals if i.mid2 is not None]
-        if m1:
-            avg_mid1 = sum(m1) / len(m1)
-        if m2:
-            avg_mid2 = sum(m2) / len(m2)
+    avg_mid1, avg_mid2, mid_avg = _internal_mark_features(internals)
 
     student_features = {
         "mid1_exam_30": avg_mid1,
@@ -111,12 +147,22 @@ def faculty_student_risk(
     }
 
     structured = predict_student_risk_structured(student_features)
-    mid_avg = (avg_mid1 + avg_mid2) / 2.0 if internals else 0.0
+
+    academic = (
+        db.query(Academic)
+        .filter(Academic.sid == student.id)
+        .order_by(Academic.semester.desc())
+        .first()
+    )
 
     return {
         "status": "success",
         "roll_no": student.roll_no,
         "student_name": f"{student.first_name} {student.last_name}".strip(),
+        "student_email": (student.user_email or "").strip(),
+        "batch": academic.batch if academic else "",
+        "branch": academic.branch if academic else "",
+        "section": academic.section if academic else "",
         "risk_level": structured["risk_level"],
         "risk_probability": structured["risk_probability"],
         "explanation": structured["explanation"],

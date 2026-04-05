@@ -22,7 +22,7 @@ from app.models.alert import Alert
 from app.schemas.alert import AlertCreate
 from app.schemas.notification import NotificationCreate
 from app.services.notification_service import get_faculty_notifications, create_notification
-from app.utils.validators import validate_vvit_and_format
+from app.utils.validators import validate_vvit_and_format, validate_email_format
 from app.utils.academic_year import resolve_year
 router = APIRouter(prefix="/faculty", tags=["Faculty"])
 
@@ -227,7 +227,7 @@ def send_faculty_notification(
 
     if not validate_vvit_and_format(user["sub"]):
         raise HTTPException(status_code=400, detail="Invalid sender email format")
-    if data.target_email and not validate_vvit_and_format(data.target_email):
+    if data.target_email and not validate_email_format(data.target_email):
         raise HTTPException(status_code=400, detail="Invalid target email format")
 
     if data.target_role != "STUDENT":
