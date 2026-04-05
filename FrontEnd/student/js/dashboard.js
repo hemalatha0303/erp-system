@@ -56,29 +56,54 @@ async function initDashboard() {
     const alertTitle = document.getElementById("ai-title");
 
     if (alertBox && alertMsg) {
-      alertMsg.innerText = data.ai_insight;
       alertBox.style.display = "flex";
 
-      if (data.stats.attendance < 75) {
+      // Show AI insight message (Low Risk/High Risk/Moderate Risk)
+      if (data.ai_insight) {
+        // Parse AI message to determine risk level
+        const aiText = data.ai_insight;
+        
+        if (aiText.includes("Low Risk")) {
+          alertBox.className = "alert-box success";
+          if (alertIcon) {
+            alertIcon.className = "fas fa-check-circle";
+            alertIcon.style.color = "#27ae60";
+          }
+          if (alertTitle) alertTitle.innerText = "Academic Status";
+        } else if (aiText.includes("High Risk")) {
+          alertBox.className = "alert-box danger";
+          if (alertIcon) {
+            alertIcon.className = "fas fa-exclamation-circle";
+            alertIcon.style.color = "#c0392b";
+          }
+          if (alertTitle) alertTitle.innerText = "Academic Warning";
+        } else if (aiText.includes("Moderate Risk")) {
+          alertBox.className = "alert-box warning";
+          if (alertIcon) {
+            alertIcon.className = "fas fa-exclamation-triangle";
+            alertIcon.style.color = "#f39c12";
+          }
+          if (alertTitle) alertTitle.innerText = "Academic Alert";
+        }
+        
+        alertMsg.innerHTML = aiText.replace(/\n/g, "<br>");
+      } else if (data.stats.attendance < 75) {
+        // Fallback to attendance warning if ai_insight not available
         alertBox.className = "alert-box danger";
         if (alertTitle) alertTitle.innerText = "Attendance Warning";
-        if (alertIcon) alertIcon.className = "fas fa-exclamation-triangle";
+        if (alertIcon) {
+          alertIcon.className = "fas fa-exclamation-triangle";
+          alertIcon.style.color = "#c0392b";
+        }
+        alertMsg.innerText = `Your current attendance is ${data.stats.attendance}%. It's below the required 75%. Please improve your attendance immediately.`;
       } else {
         alertBox.className = "alert-box success";
-        alertBox.style.backgroundColor = "#d5f5e3";
-        alertBox.style.borderLeft = "4px solid #27ae60";
-
         if (alertTitle) alertTitle.innerText = "Attendance Status";
-        if (alertIcon) alertIcon.className = "fas fa-check-circle";
-        if (alertIcon) alertIcon.style.color = "#27ae60";
-      }
-    }
-    if (alertBox) {
-      alertBox.style.display = "flex";
-
-      const dashboardWrapper = document.querySelector(".dashboard-wrapper");
-      if (dashboardWrapper) {
-        dashboardWrapper.style.marginTop = "1vh";
+        if (alertIcon) {
+          alertIcon.className = "fas fa-check-circle";
+          alertIcon.style.color = "#27ae60";
+        }
+        alertMsg.innerText = `Your current attendance is ${data.stats.attendance}%. Good job! Keep maintaining your attendance.`;
       }
     }
     const circle = document.getElementById("attendance-circle");

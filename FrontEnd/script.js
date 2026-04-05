@@ -1,27 +1,57 @@
+// Form navigation function
+function showForm(formName) {
+  const loginForm = document.getElementById("loginForm");
+  const cpForm = document.getElementById("changePasswordForm");
+  const fpForm = document.getElementById("forgotPasswordForm");
+  const rpForm = document.getElementById("resetPasswordForm");
+  const msg = document.getElementById("message");
+
+  // Hide all forms
+  loginForm.style.display = "none";
+  cpForm.style.display = "none";
+  fpForm.style.display = "none";
+  rpForm.style.display = "none";
+
+  // Show selected form
+  switch (formName) {
+    case "login":
+      loginForm.style.display = "block";
+      break;
+    case "changePassword":
+      cpForm.style.display = "block";
+      break;
+    case "forgotPassword":
+      fpForm.style.display = "block";
+      break;
+    case "resetPassword":
+      rpForm.style.display = "block";
+      break;
+  }
+
+  msg.textContent = "";
+}
+
+// Legacy function for backward compatibility
 function toggleForms() {
   const loginForm = document.getElementById("loginForm");
   const cpForm = document.getElementById("changePasswordForm");
-  const msg = document.getElementById("message");
-
   if (loginForm.style.display === "none") {
-    loginForm.style.display = "block";
-    cpForm.style.display = "none";
-    msg.textContent = "";
+    showForm("login");
   } else {
-    loginForm.style.display = "none";
-    cpForm.style.display = "block";
-    msg.textContent = "";
+    showForm("changePassword");
   }
 }
 
+// LOGIN FORM HANDLER
 document.getElementById("loginForm").addEventListener("submit", function (e) {
   e.preventDefault();
 
+  const role = document.getElementById("role").value;
   const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
   const messageBox = document.getElementById("message");
 
-  if (!username || !password) {
+  if (!role || !username || !password) {
     messageBox.textContent = "Please fill in all fields.";
     messageBox.style.color = "red";
     return;
@@ -37,11 +67,12 @@ document.getElementById("loginForm").addEventListener("submit", function (e) {
         body: JSON.stringify({
           email: username,
           password: password,
+          role: role,
         }),
       });
 
       if (!res.ok) {
-        messageBox.textContent = "Invalid credentials";
+        messageBox.textContent = "Invalid credentials or role mismatch";
         messageBox.style.color = "red";
         return;
       }
@@ -50,14 +81,14 @@ document.getElementById("loginForm").addEventListener("submit", function (e) {
       const token = data.access_token;
 
       const payload = JSON.parse(atob(token.split(".")[1]));
-      const role = payload.role;
-      console.log(payload, role);
+      const userRole = payload.role;
+      console.log(payload, userRole);
       localStorage.setItem("token", token);
       messageBox.style.color = "green";
-      messageBox.textContent = `Logging in as ${role}...`;
+      messageBox.textContent = `Logging in as ${userRole}...`;
 
       setTimeout(() => {
-        switch (role) {
+        switch (userRole) {
           case "STUDENT":
             window.location.href = "student/html/dashboard.html";
             break;
@@ -85,6 +116,7 @@ document.getElementById("loginForm").addEventListener("submit", function (e) {
   loggerLogic();
 });
 
+// CHANGE PASSWORD FORM HANDLER
 document
   .getElementById("changePasswordForm")
   .addEventListener("submit", async function (e) {
@@ -126,7 +158,7 @@ document
             old_password: oldPass,
             new_password: newPass,
           }),
-        },
+        }
       );
 
       const changeData = await changeRes.json();
@@ -136,7 +168,7 @@ document
         msg.style.color = "green";
 
         setTimeout(() => {
-          toggleForms();
+          showForm("login");
           document.getElementById("username").value = email;
         }, 2000);
       } else {
@@ -149,3 +181,124 @@ document
       msg.style.color = "red";
     }
   });
+
+// FORGOT PASSWORD FORM HANDLER
+document
+  .getElementById("forgotPasswordForm")
+  .addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const email = document.getElementById("fp-email").value;
+    const msg = document.getElementById("message");
+
+    if (!email.endsWith("@vvit.net")) {
+      msg.textContent = "Please enter a valid @vvit.net email address";
+      msg.style.color = "red";
+      return;
+    }
+
+    msg.textContent = "Sending reset link...";
+    msg.style.color = "blue";
+
+    try {
+      const res = await fetch("http://127.0.0.1:8000/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        msg.textContent = data.message || "Reset link sent to your personal email!";
+        msg.style.color = "green";
+        document.getElementById("forgotPasswordForm").reset();
+
+        setTimeout(() => {
+          showForm("login");
+        }, 3000);
+      } else {
+        msg.textContent = data.detail || "Failed to send reset link";
+        msg.style.color = "red";
+      }
+    } catch (err) {
+      console.error(err);
+      msg.textContent = "Network Error";
+      msg.style.color = "red";
+    }
+  });
+
+// RESET PASSWORD FORM HANDLER
+document
+  .getElementById("resetPasswordForm")
+  .addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const email = document.getElementById("rp-email").value;
+    const token = document.getElementById("rp-token").value;
+    const password = document.getElementById("rp-password").value;
+    const passwordConfirm = document.getElementById("rp-password-confirm").value;
+    const msg = document.getElementById("message");
+
+    if (password !== passwordConfirm) {
+      msg.textContent = "Passwords do not match";
+      msg.style.color = "red";
+      return;
+    }
+
+    if (password.length < 6) {
+      msg.textContent = "Password must be at least 6 characters long";
+      msg.style.color = "red";
+      return;
+    }
+
+    msg.textContent = "Resetting password...";
+    msg.style.color = "blue";
+
+    try {
+      const res = await fetch("http://127.0.0.1:8000/auth/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          reset_token: token,
+          new_password: password,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        msg.textContent = data.message || "Password reset successfully! Redirecting to login...";
+        msg.style.color = "green";
+        document.getElementById("resetPasswordForm").reset();
+
+        setTimeout(() => {
+          showForm("login");
+        }, 2000);
+      } else {
+        msg.textContent = data.detail || "Failed to reset password";
+        msg.style.color = "red";
+      }
+    } catch (err) {
+      console.error(err);
+      msg.textContent = "Network Error";
+      msg.style.color = "red";
+    }
+  });
+
+// Check for reset token in URL (for email links)
+window.addEventListener("load", function () {
+  const urlParams = new URLSearchParams(window.location.search);
+  const token = urlParams.get("token");
+  const email = urlParams.get("email");
+
+  if (token && email) {
+    document.getElementById("rp-email").value = email;
+    document.getElementById("rp-token").value = token;
+    showForm("resetPassword");
+    document.getElementById("message").textContent =
+      "Enter your new password to complete the reset";
+    document.getElementById("message").style.color = "blue";
+  }
+});

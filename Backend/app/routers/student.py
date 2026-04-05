@@ -4,11 +4,11 @@ from app.services.notification_service import get_student_notifications
 from app.core.database import SessionLocal
 from app.core.dependencies import get_current_user
 from app.models.external_marks import ExternalMarks
-from app.models.semester_result import SemesterResult
 from app.models.student import Student
 from app.models.internal_marks import InternalMarks
 from app.models.timetable import TimeTable
 from app.schemas.student import StudentProfileRequest, StudentProfileResponse
+from app.schemas.payment import StudentPaymentSubmitRequest
 from app.services.library_service import get_student_library_books
 from app.services.external_marks_service import get_semester_result
 from app.services.hostel_service import get_student_hostel_details
@@ -29,6 +29,9 @@ from app.models.library_issue import LibraryIssue
 from app.models.attendance_record import AttendanceRecord
 from app.models.attendance_session import AttendanceSession
 from app.services.inference import predict_student_risk 
+from app.models.course_grade import SemesterGrade
+from app.utils.marks_calculator import calc_cgpa, calc_mid_total
+from app.utils.academic_year import resolve_year
 from app.models.academic import Academic
 from app.models.alert import Alert
 router = APIRouter(prefix="/student", tags=["Student"])
@@ -47,7 +50,6 @@ from app.services.notification_service import get_student_notifications
 from app.core.database import SessionLocal
 from app.core.dependencies import get_current_user
 from app.models.external_marks import ExternalMarks
-from app.models.semester_result import SemesterResult
 from app.models.student import Student
 from app.models.internal_marks import InternalMarks
 from app.models.timetable import TimeTable
@@ -95,11 +97,16 @@ def get_student_dashboard_data(
     att_percentage = att_data["attendance_percentage"]
 
     # Feature: CGPA / Previous SGPA
-    results = db.query(SemesterResult).filter(SemesterResult.srno == student.roll_no).all()
+    results = (
+        db.query(SemesterGrade)
+        .filter(SemesterGrade.sid == student.id)
+        .order_by(SemesterGrade.semester)
+        .all()
+    )
     if results:
-        total_sgpa = sum([r.sgpa for r in results if r.sgpa is not None])
-        cgpa = round(total_sgpa / len(results), 2)
-        prev_sgpa = results[-1].sgpa if results[-1].sgpa else cgpa
+        last = results[-1]
+        cgpa = float(last.cgpa) if last.cgpa is not None else calc_cgpa(results)
+        prev_sgpa = float(last.sgpa) if last.sgpa is not None else cgpa
     else:
         cgpa = 0.0
         prev_sgpa = 0.0
@@ -119,14 +126,19 @@ def get_student_dashboard_data(
     avg_mid1 = 0
     avg_mid2 = 0
     if internals:
-        # Sum components (OpenBook+Desc+Sem+Obj = Max 25) and scale to 30 if needed by model
-        # Assuming model expects values around 0-30 based on header 'mid1_exam_30'
-        m1_totals = [(i.openbook1 + i.descriptive1 + i.seminar1 + i.objective1) for i in internals]
-        m2_totals = [(i.openbook2 + i.descriptive2 + i.seminar2 + i.objective2) for i in internals]
+        m1_totals = []
+        m2_totals = []
+        for i in internals:
+            # Use pre-calculated mid values
+            if i.mid1 is not None:
+                m1_totals.append(i.mid1)
+            if i.mid2 is not None:
+                m2_totals.append(i.mid2)
         
-        # Scale 25 -> 30 (Multiply by 1.2)
-        avg_mid1 = (sum(m1_totals) / len(m1_totals)) * 1.2
-        avg_mid2 = (sum(m2_totals) / len(m2_totals)) * 1.2
+        if m1_totals:
+            avg_mid1 = sum(m1_totals) / len(m1_totals)
+        if m2_totals:
+            avg_mid2 = sum(m2_totals) / len(m2_totals)
 
     # 3. Call Local AI Inference
     student_features = {
@@ -207,6 +219,36 @@ def get_student_payments(
     return data
 
 
+@router.post("/payments/submit")
+def submit_student_payment(
+    req: StudentPaymentSubmitRequest, user=Depends(get_current_user), db: Session = Depends(get_db)
+):
+    """
+    Student submits a payment. Creates a new transaction record.
+    """
+    if user["role"] != "STUDENT":
+        raise HTTPException(status_code=403)
+
+    student = db.query(Student).filter(Student.user_email == user["sub"]).first()
+    if not student:
+        raise HTTPException(status_code=404, detail="Student not found")
+
+    from app.schemas.payment import PaymentUpdateRequest
+    from app.services.payment_service import update_student_payment
+    
+    # Convert request to PaymentUpdateRequest format
+    payment_req = PaymentUpdateRequest(
+        roll_no=student.roll_no,
+        fee_type=req.fee_type,
+        amount=req.amount,
+        payment_mode=req.payment_mode,
+        payment_details=req.payment_details
+    )
+    
+    result = update_student_payment(db, payment_req, user["sub"])
+    return result
+
+
 @router.get("/internal-marks/{year}/{semester}")
 def get_internal_marks(
     year: int,
@@ -218,7 +260,7 @@ def get_internal_marks(
     if user["role"] != "STUDENT":
         raise HTTPException(status_code=403)
     student = db.query(Student).filter(Student.user_email == user["sub"]).first()
-    return get_internal_marks_by_student(db, student.roll_no, year, semester)
+    return get_internal_marks_by_student(db, student.roll_no, semester)
 
 
 @router.get("/external-marks/{year}/{semester}")
@@ -238,12 +280,22 @@ def get_external_marks(
 
 @router.get("/attendance/monthly")
 def view_monthly_attendance(
-    month: int, year: int, db: Session = Depends(get_db), user=Depends(get_current_user)
+    month: int,
+    semester: int,
+    batch: str = None,
+    year: int = None,
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user),
 ):
     student = db.query(Student).filter(Student.user_email == user["sub"]).first()
+    resolved_year = resolve_year(batch=batch, semester=semester, year=year)
 
     return get_student_monthly_attendance(
-        db=db, student_id=student.id, month=month, year=year
+        db=db,
+        student_id=student.id,
+        month=month,
+        year=resolved_year,
+        semester=semester,
     )
 
 
@@ -315,12 +367,17 @@ def view_notifications(
         raise HTTPException(403, "Access denied")
 
     
-    batch = db.query(Academic.batch).filter(Academic.user_email == current_user["sub"]).scalar()
-    print("Student Batch:", batch)
-    if not batch:
+    academic = db.query(Academic).filter(Academic.user_email == current_user["sub"]).first()
+    if not academic:
         raise HTTPException(404, "Student academic record not found")
 
-    return get_student_notifications(db, current_user["sub"], batch)
+    return get_student_notifications(
+        db,
+        current_user["sub"],
+        academic.batch,
+        academic.branch,
+        academic.section
+    )
 @router.get("/alerts")
 def get_my_alerts(db: Session = Depends(get_db), user=Depends(get_current_user)):
     if user["role"] != "STUDENT":

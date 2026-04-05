@@ -12,6 +12,7 @@
     />
   </head>
   <body>
+    <div class="login-page">
     <div class="login-container">
       <div class="login-header">
         <h2>SIH25103 ERP System</h2>
@@ -24,15 +25,15 @@
             <option disabled="" selected="" value="">
               -- Choose your role --
             </option>
-            <option value="student">Student</option>
-            <option value="faculty">Faculty</option>
-            <option value="hod">HOD</option>
-            <option value="admin">Admin</option>
+            <option value="STUDENT">Student</option>
+            <option value="FACULTY">Faculty</option>
+            <option value="HOD">HOD</option>
+            <option value="ADMIN">Admin</option>
           </select>
         </div>
         <div class="form-group">
           <label for="username">User ID / Email</label>
-          <input id="username" placeholder="Enter ID" required="" type="text" />
+          <input id="username" placeholder="Enter Email" required="" type="text" />
         </div>
         <div class="form-group">
           <label for="password">Password</label>
@@ -44,13 +45,16 @@
           />
         </div>
         <div class="form-actions" style="justify-content: space-between">
-          <a class="forgot-password" href="#" onclick="toggleForms()"
+          <a class="forgot-password" href="#" onclick="showForm('changePassword'); return false;"
             >Change Password?</a
           >
-          <!-- <a href="#" class="forgot-password">Forgot Password?</a> -->
+          <a class="forgot-password" href="#" onclick="showForm('forgotPassword'); return false;"
+            >Forgot Password?</a
+          >
         </div>
         <button class="login-btn" type="submit">Login</button>
       </form>
+
       <form id="changePasswordForm" style="display: none">
         <h3 style="margin-bottom: 15px; color: #333">Update Password</h3>
         <div class="form-group">
@@ -91,12 +95,99 @@
           class="form-actions"
           style="justify-content: center; margin-top: 15px"
         >
-          <a class="forgot-password" href="#" onclick="toggleForms()"
+          <a class="forgot-password" href="#" onclick="showForm('login'); return false;"
             >Back to Login</a
           >
         </div>
       </form>
+
+      <form id="forgotPasswordForm" style="display: none">
+        <h3 style="margin-bottom: 15px; color: #333">Reset Password</h3>
+        <p style="color: #666; font-size: 0.9rem; margin-bottom: 15px;">Enter your university email (@vvit.net) and we'll send a password reset link to your personal email.</p>
+        <div class="form-group">
+          <label>University Email</label>
+          <input
+            id="fp-email"
+            placeholder="Enter your @vvit.net email"
+            required=""
+            type="email"
+          />
+        </div>
+        <button
+          class="login-btn"
+          style="background-color: #27ae60"
+          type="submit"
+        >
+          Send Reset Link
+        </button>
+        <div
+          class="form-actions"
+          style="justify-content: center; margin-top: 15px"
+        >
+          <a class="forgot-password" href="#" onclick="showForm('login'); return false;"
+            >Back to Login</a
+          >
+        </div>
+      </form>
+
+      <form id="resetPasswordForm" style="display: none">
+        <h3 style="margin-bottom: 15px; color: #333">Create New Password</h3>
+        <div class="form-group">
+          <label>Email Address</label>
+          <input
+            id="rp-email"
+            placeholder="Enter Email"
+            required=""
+            type="email"
+            readonly=""
+          />
+        </div>
+        <div class="form-group">
+          <label>Reset Token</label>
+          <input
+            id="rp-token"
+            placeholder="Token from reset email"
+            required=""
+            type="text"
+          />
+        </div>
+        <div class="form-group">
+          <label>New Password</label>
+          <input
+            id="rp-password"
+            placeholder="Enter new password"
+            required=""
+            type="password"
+          />
+        </div>
+        <div class="form-group">
+          <label>Confirm Password</label>
+          <input
+            id="rp-password-confirm"
+            placeholder="Confirm password"
+            required=""
+            type="password"
+          />
+        </div>
+        <button
+          class="login-btn"
+          style="background-color: #27ae60"
+          type="submit"
+        >
+          Reset Password
+        </button>
+        <div
+          class="form-actions"
+          style="justify-content: center; margin-top: 15px"
+        >
+          <a class="forgot-password" href="#" onclick="showForm('login'); return false;"
+            >Back to Login</a
+          >
+        </div>
+      </form>
+
       <div class="error-message" id="message"></div>
+    </div>
     </div>
     <script src="script.js"></script>
   </body>

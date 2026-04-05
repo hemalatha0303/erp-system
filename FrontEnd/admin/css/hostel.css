@@ -1,4 +1,5 @@
 .page-header {
+  margin-top: 40px;
   margin-bottom: 25px;
 }
 
@@ -6,9 +7,7 @@
   color: var(--text-dark);
   font-weight: 600;
 }
-.dashboard-wrapper {
-  margin-top: 50vh;
-}
+
 .card {
   background: white;
   padding: 30px;

@@ -12,17 +12,25 @@ from sqlalchemy import func, case
 
 def mark_attendance(db, req, faculty_email):
 
-    
-    exists = db.query(AttendanceSession).filter(
+    # Check if attendance already exists for this session
+    existing_session = db.query(AttendanceSession).filter(
         AttendanceSession.subject_code == req.subject_code,
         AttendanceSession.date == req.date,
         AttendanceSession.period == req.period,
         AttendanceSession.semester == req.semester
     ).first()
 
-    if exists:
-        raise Exception("Attendance already marked for this subject & period")
+    if existing_session:
+        # Delete existing attendance records for this session (override)
+        db.query(AttendanceRecord).filter(
+            AttendanceRecord.session_id == existing_session.id
+        ).delete()
+        
+        # Delete the existing session
+        db.delete(existing_session)
+        db.flush()
 
+    # Create new attendance session
     session = AttendanceSession(
         subject_code=req.subject_code,
         subject_name=req.subject_name,
@@ -36,6 +44,7 @@ def mark_attendance(db, req, faculty_email):
     db.add(session)
     db.flush()  
 
+    # Add new attendance records
     for item in req.attendance:
         student = db.query(Student).filter(
             Student.roll_no == item.roll_no
@@ -78,9 +87,11 @@ def get_student_attendance(db, student_id, subject_code):
         "present_periods": present,
         "percentage": percentage
     }
-def get_student_monthly_attendance(db, student_id: int, month: int, year: int):
+def get_student_monthly_attendance(
+    db, student_id: int, month: int, year: int, semester: int = None
+):
 
-    records = (
+    query = (
         db.query(
             AttendanceSession.date,
             AttendanceSession.subject_name,
@@ -95,9 +106,15 @@ def get_student_monthly_attendance(db, student_id: int, month: int, year: int):
         .filter(
             AttendanceRecord.sid == student_id,
             extract("month", AttendanceSession.date) == month,
-            extract("year", AttendanceSession.date) == year
+            AttendanceSession.year == year
         )
-        .order_by(
+    )
+
+    if semester is not None:
+        query = query.filter(AttendanceSession.semester == semester)
+
+    records = (
+        query.order_by(
             AttendanceSession.date,
             AttendanceSession.period
         )
@@ -117,7 +134,11 @@ def get_student_monthly_attendance(db, student_id: int, month: int, year: int):
         if r.status == "PRESENT":
             summary[r.subject_name]["present"] += 1
     subject_summary = []
+    total_classes = 0
+    attended_classes = 0
     for subject, data in summary.items():
+        total_classes += data["total"]
+        attended_classes += data["present"]
         percentage = round(
             (data["present"] / data["total"]) * 100, 2
         )
@@ -132,7 +153,13 @@ def get_student_monthly_attendance(db, student_id: int, month: int, year: int):
         "month": month_name[month],
         "year": year,
         "attendance": attendance_map,
-        "subject_summary": subject_summary
+        "subject_summary": subject_summary,
+        "monthly_summary": {
+            "total_classes": total_classes,
+            "attended_classes": attended_classes,
+            "absent_classes": total_classes - attended_classes,
+            "percentage": round((attended_classes / total_classes) * 100, 2) if total_classes else 0
+        }
     }
 def get_semester_attendance_summary(db, srno: str, semester: int):
 

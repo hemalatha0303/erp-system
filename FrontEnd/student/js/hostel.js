@@ -7,10 +7,6 @@ async function loadHostelData() {
   const roommateSection = document.getElementById("roommate-section");
   const roommateList = document.getElementById("roommate-list");
 
-  const feeTotalEl = document.getElementById("fee-total");
-  const feePaidEl = document.getElementById("fee-paid");
-  const feeDueEl = document.getElementById("fee-due");
-
   const token = localStorage.getItem("token");
 
   try {
@@ -37,18 +33,8 @@ async function loadHostelData() {
       document.getElementById("h-block").innerText = "Hostel Block";
       document.getElementById("h-room").innerText = data.room_number;
       document.getElementById("h-type").innerText =
-        `${data.sharing}-Seater ${data.room_type}`;
+        `${data.sharing}-Sharing ${data.room_type}`;
       document.getElementById("h-bed").innerText = "Assigned";
-
-      if (data.fee) {
-        feeTotalEl.innerText = `₹ ${data.fee.total.toLocaleString()}`;
-        feePaidEl.innerText = `₹ ${data.fee.paid.toLocaleString()}`;
-
-        const dueAmount = data.fee.due;
-        feeDueEl.innerText = `₹ ${dueAmount.toLocaleString()}`;
-
-        feeDueEl.style.color = dueAmount > 0 ? "#c0392b" : "#27ae60";
-      }
 
       roommateSection.style.display = "block";
       roommateList.innerHTML = `
@@ -70,10 +56,6 @@ async function loadHostelData() {
       document.getElementById("h-bed").innerText = "--";
 
       roommateSection.style.display = "none";
-
-      feeTotalEl.innerText = "₹ 0";
-      feePaidEl.innerText = "₹ 0";
-      feeDueEl.innerText = "₹ 0";
     }
   } catch (error) {
     console.error("Error loading hostel data:", error);

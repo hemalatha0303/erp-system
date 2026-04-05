@@ -1,16 +1,10 @@
 async function fetchStudentListForAttendance() {
-  const dateVal = document.getElementById("att-date").value;
-  const year = document.getElementById("att-year").value;
-  const sem = document.getElementById("att-sem").value;
+  const batch = document.getElementById("att-batch").value.trim();
+  const branch = document.getElementById("att-branch").value;
+  const section = document.getElementById("att-sec").value;
 
-  const sec = document.getElementById("att-sec").value.trim().toUpperCase();
-  const branch = document
-    .getElementById("att-branch")
-    .value.trim()
-    .toUpperCase();
-
-  if (!year || !sem || !sec || !branch) {
-    alert("Please fill in Year, Semester, Branch, and Section.");
+  if (!batch) {
+    alert("Please enter Batch to fetch students.");
     return;
   }
 
@@ -25,10 +19,9 @@ async function fetchStudentListForAttendance() {
     const token = localStorage.getItem("token");
 
     const queryParams = new URLSearchParams({
-      year: year,
-      semester: sem,
-      section: sec,
+      batch: batch,
       branch: branch,
+      section: section,
     });
 
     const res = await fetch(
@@ -105,13 +98,19 @@ async function submitAttendance() {
     return;
   }
 
+  const batch = document.getElementById("att-batch").value.trim();
+  if (!batch) {
+    alert("Please enter Batch before submitting attendance.");
+    return;
+  }
+
   const payload = {
     subject_code: document.getElementById("att-sub").value,
     subject_name:
       document.getElementById("att-sub").options[
         document.getElementById("att-sub").selectedIndex
       ].text,
-    year: parseInt(document.getElementById("att-year").value),
+    batch: batch,
     semester: parseInt(document.getElementById("att-sem").value),
     date: dateVal,
     period: parseInt(document.getElementById("att-period").value),

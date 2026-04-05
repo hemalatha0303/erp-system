@@ -31,8 +31,14 @@ async function sendNotification() {
       document.getElementById("notification-form").reset();
       toggleBatchInput();
     } else {
-      const error = await response.json();
-      alert(" Error: " + (error.detail || "Failed to send"));
+      const raw = await response.text();
+      let error = {};
+      try {
+        error = raw ? JSON.parse(raw) : {};
+      } catch (e) {
+        error = { detail: raw };
+      }
+      alert(" Error: " + (error.detail || error.message || "Failed to send"));
     }
   } catch (err) {
     console.error(err);

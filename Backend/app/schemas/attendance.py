@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 from datetime import date
 
 class AttendanceItem(BaseModel):
@@ -9,9 +9,10 @@ class AttendanceItem(BaseModel):
 class AttendanceCreate(BaseModel):
     subject_code: str
     subject_name: str
-    year: int
+    year: Optional[int] = None
     semester: int
     date: date
     period: int
+    batch: Optional[str] = None
     attendance: List[AttendanceItem]
     

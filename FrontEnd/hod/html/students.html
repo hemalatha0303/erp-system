@@ -35,7 +35,7 @@
       }
     </style>
   </head>
-  <body>
+  <body data-api-base="">
     <div id="sidebar-container"></div>
     <div id="header-container"></div>
     <div class="main-content">
@@ -51,47 +51,54 @@
               style="flex-grow: 1; text-transform: uppercase"
               type="text"
             />
-            <button class="primary-btn" onclick="lookupStudent()">
-              Search
+            <button class="primary-btn" id="lookup-btn" onclick="lookupStudent()">
+              <span class="btn-label">Search</span>
+              <span class="btn-spinner" aria-hidden="true"></span>
             </button>
           </div>
           
           <div
             id="student-details-card"
-            style="
-              display: none;
-              margin-top: 15px;
-              padding: 15px;
-              background: #f8f9fa;
-              border-radius: 6px;
-              border: 1px solid #e0e0e0;
-            "
+            class="student-details-card"
+            style="display: none"
           >
-            <h4 style="margin-top: 0; border-bottom: 1px solid #ddd; padding-bottom: 8px;">Student Details</h4>
-            <div id="lookup-result-content"></div>
+            <div class="student-details-header">
+              <h4>Student Details</h4>
+            </div>
+            <div id="lookup-result-content" class="lookup-content"></div>
           </div>
         </div>
 
         <div class="page-header"><h2>Batch Analytics</h2></div>
         <div class="card filters-row">
-          <select id="st-year">
-            <option value="1">Year 1</option>
-            <option value="2">Year 2</option>
-            <option value="3">Year 3</option>
-            <option value="4">Year 4</option>
+          <input id="st-batch" placeholder="Batch e.g., 2022-26" type="text" />
+          <select id="st-branch">
+            <option value="ALL">All Branches</option>
+            <option value="CIC">CIC</option>
+            <option value="CSM">CSM</option>
+            <option value="CSE">CSE</option>
+            <option value="IT">IT</option>
+            <option value="ECE">ECE</option>
           </select>
           <select id="st-sem">
+            <option value="ALL">All Semesters</option>
             <option value="1">Sem 1</option>
             <option value="2">Sem 2</option>
+            <option value="3">Sem 3</option>
+            <option value="4">Sem 4</option>
+            <option value="5">Sem 5</option>
+            <option value="6">Sem 6</option>
+            <option value="7">Sem 7</option>
+            <option value="8">Sem 8</option>
           </select>
           <select id="st-sec">
+            <option value="ALL">All Sections</option>
             <option value="A">Sec A</option>
             <option value="B">Sec B</option>
             <option value="C">Sec C</option>
-            <option value="D">Sec D</option>
           </select>
           <button class="primary-btn" onclick="fetchStudentAnalytics()">
-            Fetch Batch Data
+            Fetch Analytics
           </button>
         </div>
 

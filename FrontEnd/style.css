@@ -15,14 +15,17 @@
 }
 
 body {
+  margin: 0;
+  padding: 0;
   background-color: var(--bg-light);
-  color: var(--text-dark);
-  height: 100vh;
+  overflow-y: auto;
+}
+.login-page {
   display: flex;
   justify-content: center;
   align-items: center;
+  height: 100vh;
 }
-
 .login-container {
   background: var(--white);
   padding: 2.5rem;

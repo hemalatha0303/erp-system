@@ -16,5 +16,11 @@ class Notification(Base):
     category = Column(String(50), default="GENERAL") # ACADEMIC, FEES, etc.
     priority = Column(String(20), default="NORMAL")  # CRITICAL, IMPORTANT, NORMAL
 
+    # New targeting and sender fields
+    branch = Column(String(20), nullable=True)
+    section = Column(String(5), nullable=True)
+    target_email = Column(String(100), nullable=True)
+    sender_role = Column(String(20), nullable=True)
+
     created_by = Column(String(100))
     created_at = Column(DateTime, default=datetime.utcnow)

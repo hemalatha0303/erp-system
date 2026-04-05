@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from datetime import date
+from typing import Optional, Dict, Any
 
 
 class StudentPaymentLookupResponse(BaseModel):
@@ -8,7 +9,6 @@ class StudentPaymentLookupResponse(BaseModel):
     branch: str
     year: int
     email: str
-
 
 
 class PaymentCreateRequest(BaseModel):
@@ -26,6 +26,15 @@ class PaymentUpdateRequest(BaseModel):
     roll_no: str
     fee_type: str        
     amount: float
-    payment_mode: str   
-    
+    payment_mode: str
+    payment_details: Optional[Dict[str, Any]] = None
+
+
+class StudentPaymentSubmitRequest(BaseModel):
+    fee_type: str
+    amount: float
+    payment_mode: str
+    payment_details: Optional[Dict[str, Any]] = None
+
+
     

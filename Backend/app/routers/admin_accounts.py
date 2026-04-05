@@ -16,7 +16,7 @@ def get_db():
 
 @router.post("/signup-users")
 def upload_users(
-    role: str = Query(..., description="STUDENT or FACULTY"),
+    role: str = Query(..., description="STUDENT, FACULTY, or HOD"),
     file: UploadFile = File(...),
     user=Depends(get_current_user),
     db: Session = Depends(get_db)
@@ -24,10 +24,29 @@ def upload_users(
     if user["role"] != "ADMIN":
         raise HTTPException(status_code=403, detail="Admin access required")
 
-    emails = extract_emails(file.file)
-    created_users = create_users_from_excel(db, emails, role)
+    try:
+        extracted = extract_emails(file.file)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    duplicate_emails = extracted.get("duplicates", [])
+    if duplicate_emails:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "message": "Duplicate emails found in upload. Remove duplicates and re-upload.",
+                "duplicates": duplicate_emails,
+            },
+        )
+
+    result = create_users_from_excel(db, extracted.get("users", []), role)
 
     return {
-        "count": len(created_users),
-        "credentials": created_users
+        "success": result.get("success", False),
+        "created_count": len(result.get("created", [])),
+        "skipped_count": len(result.get("skipped", [])),
+        "error_count": len(result.get("errors", [])),
+        "created_users": result.get("created", []),
+        "skipped_users": result.get("skipped", []),
+        "errors": result.get("errors", [])
     }

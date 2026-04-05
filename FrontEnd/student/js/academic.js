@@ -10,11 +10,11 @@ function getAuthHeaders() {
 }
 
 function mid1Total(m) {
-  return m.openbook1 + m.descriptive1 + m.seminar1 + m.objective1;
+  return m.mid1 ?? 0;
 }
 
 function mid2Total(m) {
-  return m.openbook2 + m.descriptive2 + m.seminar2 + m.objective2;
+  return m.mid2 ?? 0;
 }
 
 async function updateTable() {
@@ -42,9 +42,7 @@ async function updateTable() {
 async function loadInternalMarks(semester, type) {
   semester = Number(semester);
   const year = Math.floor((semester + 1) / 2);
-  const sem = semester % 2 === 0 ? 2 : 1;
-
-  const url = `http://127.0.0.1:8000/student/internal-marks/${year}/${sem}`;
+  const url = `http://127.0.0.1:8000/student/internal-marks/${year}/${semester}`;
   console.log("Fetching URL:", url);
 
   const res = await fetch(url, { headers: getAuthHeaders() });
@@ -66,11 +64,11 @@ async function loadInternalMarks(semester, type) {
         <tr>
             <th>Subject Code</th>
             <th>Subject Name</th>
-            <th>Open Book (${type === "mid1" ? "M1" : "M2"})</th>
-            <th>Descriptive (${type === "mid1" ? "M1" : "M2"})</th>
-            <th>Seminar (${type === "mid1" ? "M1" : "M2"})</th>
-            <th>Objective (${type === "mid1" ? "M1" : "M2"})</th>
-            <th>Total (30)</th>
+            <th>Open Book</th>
+            <th>Objective</th>
+            <th>Descriptive</th>
+            <th>Seminar</th>
+            <th>Mid Total (30)</th>
             <th>Status</th>
         </tr>
     `;
@@ -81,12 +79,12 @@ async function loadInternalMarks(semester, type) {
   }
 
   marksArray.forEach((s) => {
-    const openbook = type === "mid1" ? s.openbook1 : s.openbook2;
-    const descriptive = type === "mid1" ? s.descriptive1 : s.descriptive2;
-    const seminar = type === "mid1" ? s.seminar1 : s.seminar2;
-    const objective = type === "mid1" ? s.objective1 : s.objective2;
+    const openbook = (type === "mid1" ? s.openbook1 : s.openbook2) ?? 0;
+    const objective = (type === "mid1" ? s.objective1 : s.objective2) ?? 0;
+    const descriptive = (type === "mid1" ? s.descriptive1 : s.descriptive2) ?? 0;
+    const seminar = (type === "mid1" ? s.seminar1 : s.seminar2) ?? 0;
 
-    const total = openbook + descriptive + seminar + objective;
+    const total = type === "mid1" ? mid1Total(s) : mid2Total(s);
     const pass = total >= 12;
 
     tbody.innerHTML += `
@@ -94,29 +92,36 @@ async function loadInternalMarks(semester, type) {
                 <td>${s.subject_code}</td>
                 <td>${s.subject_name}</td>
                 <td>${openbook}</td>
+                <td>${objective}</td>
                 <td>${descriptive}</td>
                 <td>${seminar}</td>
-                <td>${objective}</td>
                 <td>${total}</td>
                 <td class="${pass ? "status-pass" : "status-fail"}">${pass ? "Pass" : "Fail"}</td>
             </tr>
         `;
   });
+
+  document.getElementById("sgpa-val").innerText = "--";
+  document.getElementById("cgpa-val").innerText = "--";
+  document.getElementById("status-val").innerText = "--";
 }
 
 async function loadSemesterMarks(semester) {
   semester = Number(semester);
   const year = Math.floor((semester + 1) / 2);
-  const sem = semester % 2 === 0 ? 2 : 1;
 
   const res = await fetch(
-    `http://127.0.0.1:8000/student/external-marks/${year}/${sem}`,
+    `http://127.0.0.1:8000/student/external-marks/${year}/${semester}`,
     { headers: getAuthHeaders() },
   );
 
   const data = await res.json();
 
-  const marksArray = data.semester_results || [];
+  const marksArray = data.external_marks || [];
+  const semesterResults = data.semester_results || [];
+  const sgpaVal = semesterResults.length ? semesterResults[0].sgpa : null;
+  const resultStatus = semesterResults.length ? semesterResults[0].result_status : "--";
+  const cgpaVal = data.cgpa ?? null;
 
   const thead = document.querySelector("#marksTable thead");
   const tbody = document.querySelector("#marksTable tbody");
@@ -127,7 +132,6 @@ async function loadSemesterMarks(semester) {
             <th>Subject Name</th>
             <th>Credits</th>
             <th>Grade</th>
-            <th>GPA</th>
         </tr>
     `;
 
@@ -147,10 +151,15 @@ async function loadSemesterMarks(semester) {
                 <td>${s.subject_name}</td>
                 <td>${s.credits}</td>
                 <td class="status-pass">${s.grade}</td>
-                <td><strong>${s.gpa}</strong></td>
             </tr>
         `;
   });
+
+  document.getElementById("sgpa-val").innerText =
+    sgpaVal !== null && sgpaVal !== undefined ? Number(sgpaVal).toFixed(2) : "--";
+  document.getElementById("cgpa-val").innerText =
+    cgpaVal !== null && cgpaVal !== undefined ? Number(cgpaVal).toFixed(2) : "--";
+  document.getElementById("status-val").innerText = resultStatus ?? "--";
 }
 
 async function downloadPdf() {
@@ -193,3 +202,4 @@ async function downloadPdf() {
 
   doc.save(`Academic_Records_Sem${semester}_${type}.pdf`);
 }
+
