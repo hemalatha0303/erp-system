@@ -41,16 +41,33 @@ def predict_student_risk(student_dict):
         # 3. Predict
         prob = MODEL.predict_proba(scaled)[0][1] * 100
 
-        # 4. SHAP Explanation
-        shap_values = EXPLAINER(scaled)
+        # 4. SHAP Explanation (with error handling)
         increases_risk = []
-        
-        for i, feature in enumerate(FEATURES):
-            contribution = shap_values.values[0][i][1]
-            if contribution > 0:
-                # Map technical feature names to readable text
-                feat_name = feature.replace("_30", "").replace("_100", "").replace("_10", "").replace("_", " ").title()
-                increases_risk.append(feat_name)
+        try:
+            shap_values = EXPLAINER(scaled)
+            
+            # Handle different SHAP output formats
+            if hasattr(shap_values, 'values'):
+                shap_vals = shap_values.values
+            else:
+                shap_vals = shap_values
+            
+            # Extract values for positive class (class 1 = failure)
+            if len(shap_vals.shape) == 3:  # (samples, features, classes)
+                shap_contrib = shap_vals[0, :, 1]
+            elif len(shap_vals.shape) == 2:  # (samples, features)
+                shap_contrib = shap_vals[0, :]
+            else:
+                shap_contrib = []
+            
+            for i, feature in enumerate(FEATURES):
+                if i < len(shap_contrib) and shap_contrib[i] > 0:
+                    # Map technical feature names to readable text
+                    feat_name = feature.replace("_30", "").replace("_100", "").replace("_10", "").replace("_", " ").title()
+                    increases_risk.append(feat_name)
+        except Exception as shap_err:
+            print(f"SHAP Explanation Error: {shap_err}")
+            # Continue with basic explanation if SHAP fails
 
         # 5. Construct Insight
         if prob < 30:
@@ -70,4 +87,75 @@ def predict_student_risk(student_dict):
 
     except Exception as e:
         print(f"Prediction Error: {e}")
+        import traceback
+        traceback.print_exc()
         return "Could not generate academic insight."
+
+
+def predict_student_risk_structured(student_dict):
+    """
+    Same inputs as predict_student_risk; returns a dict for JSON APIs.
+    Keys: risk_level (LOW|MEDIUM|HIGH), risk_probability (0-100 float), explanation (str)
+    """
+    if not MODEL:
+        return {
+            "risk_level": "LOW",
+            "risk_probability": 0.0,
+            "explanation": "AI risk model is unavailable. Factors shown are from live records only.",
+        }
+    try:
+        data = {feat: student_dict.get(feat, 0) for feat in FEATURES}
+        df = pd.DataFrame([data])[FEATURES]
+        scaled = SCALER.transform(df)
+        prob = float(MODEL.predict_proba(scaled)[0][1] * 100)
+
+        increases_risk = []
+        try:
+            shap_values = EXPLAINER(scaled)
+            if hasattr(shap_values, "values"):
+                shap_vals = shap_values.values
+            else:
+                shap_vals = shap_values
+            if len(shap_vals.shape) == 3:
+                shap_contrib = shap_vals[0, :, 1]
+            elif len(shap_vals.shape) == 2:
+                shap_contrib = shap_vals[0, :]
+            else:
+                shap_contrib = []
+            for i, feature in enumerate(FEATURES):
+                if i < len(shap_contrib) and shap_contrib[i] > 0:
+                    feat_name = (
+                        feature.replace("_30", "")
+                        .replace("_100", "")
+                        .replace("_10", "")
+                        .replace("_", " ")
+                        .title()
+                    )
+                    increases_risk.append(feat_name)
+        except Exception as shap_err:
+            print(f"SHAP Explanation Error: {shap_err}")
+
+        if prob < 30:
+            risk_level = "LOW"
+        elif prob < 70:
+            risk_level = "MEDIUM"
+        else:
+            risk_level = "HIGH"
+
+        if increases_risk:
+            explanation = f"Main risk factors: {', '.join(increases_risk)}."
+        else:
+            explanation = "Academic indicators are within a typical range."
+
+        return {
+            "risk_level": risk_level,
+            "risk_probability": round(prob, 1),
+            "explanation": explanation,
+        }
+    except Exception as e:
+        print(f"Prediction Error: {e}")
+        return {
+            "risk_level": "LOW",
+            "risk_probability": 0.0,
+            "explanation": "Could not run the risk model for this student.",
+        }
