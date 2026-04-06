@@ -11,6 +11,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY app ./app
 COPY create_tables.py ./create_tables.py
 
+
 # Static upload directory used by FastAPI mount (/uploads)
 RUN mkdir -p /app/uploads
 
