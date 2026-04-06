@@ -57,7 +57,7 @@ services:
       dockerfile: docker/Dockerfile.frontend
     image: erp-frontend:latest
     ports:
-      - "8080:80"
+      - "80:80"
     depends_on:
       - backend
 
