@@ -4,15 +4,25 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: erp_db
+    # e2-micro and other 1GB VMs: lower defaults so mysqld is not OOM-killed during first init
+    command: >
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --performance_schema=OFF
+      --innodb_buffer_pool_size=64M
+      --innodb_redo_log_capacity=32M
+      --table_open_cache=128
+      --max_connections=100
     ports:
       - "3306:3306"
     volumes:
       - erp_mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 10s
+      retries: 30
+      start_period: 90s
 
   backend:
     build:
@@ -22,7 +32,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      DATABASE_URL: mysql+pymysql://root:root@mysql:3306/erp_db
+      DATABASE_URL: mysql+pymysql://root:Hema7254@mysql:3306/erp_db
       JWT_SECRET: ${JWT_SECRET:-change-this-in-production}
     depends_on:
       mysql:
