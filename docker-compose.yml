@@ -3,6 +3,7 @@ services:
     image: mysql:8.0
     environment:
       MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_HOST: "%"
       MYSQL_DATABASE: erp_db
     # e2-micro and other 1GB VMs: lower defaults so mysqld is not OOM-killed during first init
     command: >
@@ -13,8 +14,7 @@ services:
       --innodb_redo_log_capacity=32M
       --table_open_cache=128
       --max_connections=100
-    ports:
-      - "3306:3306"
+    # No host port publish needed; backend connects via Docker network ("mysql:3306")
     volumes:
       - erp_mysql_data:/var/lib/mysql
     healthcheck:
@@ -32,7 +32,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      DATABASE_URL: mysql+pymysql://root:Hema7254@mysql:3306/erp_db
+      DATABASE_URL: mysql+pymysql://root:root@mysql:3306/erp_db
       JWT_SECRET: ${JWT_SECRET:-change-this-in-production}
     depends_on:
       mysql:
