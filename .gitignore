@@ -16,3 +16,9 @@ Backend/uploads/
 
 # ML artifacts are optional; uncomment to exclude from git
 # Backend/app/ml_models/*.pkl
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
