@@ -1,95 +1,92 @@
-import joblib
-import pandas as pd
-import shap
-import numpy as np
 import os
 
-# Define paths relative to this file
+import joblib
+import pandas as pd
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_DIR = os.path.join(BASE_DIR, "../ml_models")
 
-# Load Artifacts
+MODEL = None
+SCALER = None
+FEATURES = None
+MODEL_LOAD_ATTEMPTED = False
+MODEL_LOAD_ERROR = None
 
-try:
-    MODEL = joblib.load(os.path.join(MODEL_DIR, "academic_risk_model.pkl"))
-    SCALER = joblib.load(os.path.join(MODEL_DIR, "scaler.pkl"))
-    FEATURES = joblib.load(os.path.join(MODEL_DIR, "model_features.pkl"))
-    # SHAP background
-    BACKGROUND = np.zeros((1, len(FEATURES)))
-    EXPLAINER = shap.Explainer(MODEL.predict_proba, BACKGROUND)
-except Exception as e:
-    print(f"Error loading ML models: {e}")
-    MODEL = None
+
+def _load_model_artifacts():
+    global MODEL, SCALER, FEATURES, MODEL_LOAD_ATTEMPTED, MODEL_LOAD_ERROR
+
+    if MODEL_LOAD_ATTEMPTED:
+        return
+
+    MODEL_LOAD_ATTEMPTED = True
+
+    try:
+        MODEL = joblib.load(os.path.join(MODEL_DIR, "academic_risk_model.pkl"))
+        SCALER = joblib.load(os.path.join(MODEL_DIR, "scaler.pkl"))
+        FEATURES = joblib.load(os.path.join(MODEL_DIR, "model_features.pkl"))
+    except Exception as exc:
+        MODEL_LOAD_ERROR = str(exc)
+        print(f"Error loading ML models: {exc}")
+
+
+def _basic_risk_explanation(student_dict):
+    reasons = []
+
+    attendance = float(student_dict.get("attendance_pct_100", 0) or 0)
+    prev_sgpa = float(student_dict.get("prev_year_sgpa_10", 0) or 0)
+    backlogs = int(student_dict.get("backlogs", 0) or 0)
+    mid1 = float(student_dict.get("mid1_exam_30", 0) or 0)
+    mid2 = float(student_dict.get("mid2_exam_30", 0) or 0)
+    avg_mid = (mid1 + mid2) / 2 if mid1 or mid2 else 0
+
+    if attendance < 75:
+        reasons.append("attendance is below 75%")
+    if prev_sgpa and prev_sgpa < 6:
+        reasons.append("previous SGPA is low")
+    if backlogs > 0:
+        reasons.append(f"{backlogs} backlog(s) are present")
+    if avg_mid and avg_mid < 15:
+        reasons.append("mid exam scores are low")
+
+    if reasons:
+        return f"Main risk factors: {', '.join(reasons)}."
+    return "Academic indicators are within a typical range."
+
+
+def _predict_probability(student_dict):
+    _load_model_artifacts()
+
+    if not MODEL or not SCALER or not FEATURES:
+        return None
+
+    data = {feat: student_dict.get(feat, 0) for feat in FEATURES}
+    df = pd.DataFrame([data])[FEATURES]
+    scaled = SCALER.transform(df)
+    return float(MODEL.predict_proba(scaled)[0][1] * 100)
+
 
 def predict_student_risk(student_dict):
     """
     Input: student_dict (keys: mid1_exam_30, mid2_exam_30, attendance_pct_100, prev_year_sgpa_10, backlogs)
     Output: formatted string insight
     """
-    if not MODEL:
-        return "AI Risk Model is currently unavailable."
+    prob = _predict_probability(student_dict)
+    explanation = _basic_risk_explanation(student_dict)
 
-    try:
-        # 1. Prepare input
-        # Ensure all features exist, default to 0 if missing
-        data = {feat: student_dict.get(feat, 0) for feat in FEATURES}
-        df = pd.DataFrame([data])[FEATURES]
-        
-        # 2. Scale
-        scaled = SCALER.transform(df)
+    if prob is None:
+        if MODEL_LOAD_ERROR:
+            return "AI Risk Model is currently unavailable."
+        return f"Risk assessment unavailable.\n{explanation}"
 
-        # 3. Predict
-        prob = MODEL.predict_proba(scaled)[0][1] * 100
+    if prob < 30:
+        status = "Low Risk"
+    elif prob < 70:
+        status = "Moderate Risk"
+    else:
+        status = "High Risk"
 
-        # 4. SHAP Explanation (with error handling)
-        increases_risk = []
-        try:
-            shap_values = EXPLAINER(scaled)
-            
-            # Handle different SHAP output formats
-            if hasattr(shap_values, 'values'):
-                shap_vals = shap_values.values
-            else:
-                shap_vals = shap_values
-            
-            # Extract values for positive class (class 1 = failure)
-            if len(shap_vals.shape) == 3:  # (samples, features, classes)
-                shap_contrib = shap_vals[0, :, 1]
-            elif len(shap_vals.shape) == 2:  # (samples, features)
-                shap_contrib = shap_vals[0, :]
-            else:
-                shap_contrib = []
-            
-            for i, feature in enumerate(FEATURES):
-                if i < len(shap_contrib) and shap_contrib[i] > 0:
-                    # Map technical feature names to readable text
-                    feat_name = feature.replace("_30", "").replace("_100", "").replace("_10", "").replace("_", " ").title()
-                    increases_risk.append(feat_name)
-        except Exception as shap_err:
-            print(f"SHAP Explanation Error: {shap_err}")
-            # Continue with basic explanation if SHAP fails
-
-        # 5. Construct Insight
-        if prob < 30:
-            status = "Low Risk 🟢"
-        elif prob < 70:
-            status = "Moderate Risk 🟡"
-        else:
-            status = "High Risk 🔴"
-
-        if increases_risk:
-            factors = ", ".join(increases_risk)
-            explanation = f"Main risk factors: {factors}."
-        else:
-            explanation = "Your academic performance looks stable."
-
-        return f"{status} (Failure Probability: {prob:.1f}%)\n{explanation}"
-
-    except Exception as e:
-        print(f"Prediction Error: {e}")
-        import traceback
-        traceback.print_exc()
-        return "Could not generate academic insight."
+    return f"{status} (Failure Probability: {prob:.1f}%)\n{explanation}"
 
 
 def predict_student_risk_structured(student_dict):
@@ -97,65 +94,25 @@ def predict_student_risk_structured(student_dict):
     Same inputs as predict_student_risk; returns a dict for JSON APIs.
     Keys: risk_level (LOW|MEDIUM|HIGH), risk_probability (0-100 float), explanation (str)
     """
-    if not MODEL:
+    prob = _predict_probability(student_dict)
+    explanation = _basic_risk_explanation(student_dict)
+
+    if prob is None:
         return {
             "risk_level": "LOW",
             "risk_probability": 0.0,
-            "explanation": "AI risk model is unavailable. Factors shown are from live records only.",
+            "explanation": explanation if not MODEL_LOAD_ERROR else "AI risk model is unavailable. Live academic data is still available.",
         }
-    try:
-        data = {feat: student_dict.get(feat, 0) for feat in FEATURES}
-        df = pd.DataFrame([data])[FEATURES]
-        scaled = SCALER.transform(df)
-        prob = float(MODEL.predict_proba(scaled)[0][1] * 100)
 
-        increases_risk = []
-        try:
-            shap_values = EXPLAINER(scaled)
-            if hasattr(shap_values, "values"):
-                shap_vals = shap_values.values
-            else:
-                shap_vals = shap_values
-            if len(shap_vals.shape) == 3:
-                shap_contrib = shap_vals[0, :, 1]
-            elif len(shap_vals.shape) == 2:
-                shap_contrib = shap_vals[0, :]
-            else:
-                shap_contrib = []
-            for i, feature in enumerate(FEATURES):
-                if i < len(shap_contrib) and shap_contrib[i] > 0:
-                    feat_name = (
-                        feature.replace("_30", "")
-                        .replace("_100", "")
-                        .replace("_10", "")
-                        .replace("_", " ")
-                        .title()
-                    )
-                    increases_risk.append(feat_name)
-        except Exception as shap_err:
-            print(f"SHAP Explanation Error: {shap_err}")
+    if prob < 30:
+        risk_level = "LOW"
+    elif prob < 70:
+        risk_level = "MEDIUM"
+    else:
+        risk_level = "HIGH"
 
-        if prob < 30:
-            risk_level = "LOW"
-        elif prob < 70:
-            risk_level = "MEDIUM"
-        else:
-            risk_level = "HIGH"
-
-        if increases_risk:
-            explanation = f"Main risk factors: {', '.join(increases_risk)}."
-        else:
-            explanation = "Academic indicators are within a typical range."
-
-        return {
-            "risk_level": risk_level,
-            "risk_probability": round(prob, 1),
-            "explanation": explanation,
-        }
-    except Exception as e:
-        print(f"Prediction Error: {e}")
-        return {
-            "risk_level": "LOW",
-            "risk_probability": 0.0,
-            "explanation": "Could not run the risk model for this student.",
-        }
+    return {
+        "risk_level": risk_level,
+        "risk_probability": round(prob, 1),
+        "explanation": explanation,
+    }

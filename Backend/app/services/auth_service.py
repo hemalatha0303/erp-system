@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import SQLAlchemyError
 from app.models.user import User
 from app.core.security import hash_password, verify_password, create_jwt
 from app.utils.validators import validate_vvit_and_format
@@ -16,28 +17,43 @@ def signup(db: Session, email: str, password: str, role: str, personal_email: st
     if not personal_email or personal_email.strip() == "":
         return None, "Personal email is required for password recovery"
     
+    normalized_email = email.strip().lower()
+    normalized_role = (role or "").strip().upper()
+
+    if normalized_role not in {"STUDENT", "FACULTY", "HOD", "ADMIN"}:
+        return None, "Invalid role. Use STUDENT, FACULTY, HOD, or ADMIN"
+
+    existing = db.query(User).filter(User.email == normalized_email).first()
+    if existing:
+        return None, "User already exists. Please login instead."
+
     user = User(
-        email=email,
+        email=normalized_email,
         password=hash_password(password),
-        role=role,
+        role=normalized_role,
         personal_email=personal_email
     )
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-    if role == "HOD":
-        from app.models.hod import HODProfile
-        hod_profile = HODProfile(email=email)
-        db.add(hod_profile)
+    try:
+        db.add(user)
         db.commit()
-        db.refresh(hod_profile)
-    if role == "ADMIN":
-        from app.models.admin import AdminProfile
-        admin_profile = AdminProfile(email=email)
-        db.add(admin_profile)
-        db.commit()
-        db.refresh(admin_profile)
-    return user, "User created successfully"
+        db.refresh(user)
+        if normalized_role == "HOD":
+            from app.models.hod import HODProfile
+            hod_profile = HODProfile(email=normalized_email)
+            db.add(hod_profile)
+            db.commit()
+            db.refresh(hod_profile)
+        if normalized_role == "ADMIN":
+            from app.models.admin import AdminProfile
+            admin_profile = AdminProfile(email=normalized_email)
+            db.add(admin_profile)
+            db.commit()
+            db.refresh(admin_profile)
+        return user, "User created successfully"
+    except SQLAlchemyError as e:
+        db.rollback()
+        print(f"Signup DB error: {e}")
+        return None, "Could not create user. Check email uniqueness and role data."
 
 def login(db: Session, email: str, password: str, role: str = None):
     """

@@ -13,6 +13,5 @@ cryptography
 multipart
 python-multipart
 joblib
-shap
 scikit-learn
 xgboost

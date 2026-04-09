@@ -7,21 +7,7 @@ const API_BASE = (() => {
   const fromStorage = localStorage.getItem("apiBaseUrl");
   const base = fromDom || fromWindow || fromStorage;
   if (base) return base.replace(/\/+$/, "");
-
-  const origin = window.location.origin;
-  if (origin && origin !== "null") {
-    const url = new URL(origin);
-    url.port = "8000";
-    return url.toString().replace(/\/$/, "");
-  }
-
-  const hostname = window.location.hostname;
-  if (hostname) {
-    const protocol = window.location.protocol === "https:" ? "https:" : "http:";
-    return `${protocol}//${hostname}:8000`;
-  }
-
-  return "http://127.0.0.1:8000";
+  return `${window.location.origin}/api`;
 })();
 
 function escapeHtml(value) {

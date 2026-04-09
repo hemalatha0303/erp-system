@@ -1,12 +1,31 @@
-const API_BASE = `${window.location.protocol}//${window.location.hostname}:8000`;
-const LOCAL_API_ORIGIN = "http://127.0.0.1:8000";
+const API_BASE = `${window.location.origin}/api`;
+const LOCAL_API_ORIGINS = [
+  "http://127.0.0.1:8000",
+  "http://localhost:8000",
+  "http://0.0.0.0:8000",
+];
+window.API_BASE_URL = API_BASE;
+window.API_URL = API_BASE;
 const _origFetch = window.fetch.bind(window);
-window.fetch = (input, init) => {
-  if (typeof input === "string" && input.startsWith(LOCAL_API_ORIGIN)) {
-    return _origFetch(input.replace(LOCAL_API_ORIGIN, API_BASE), init);
+
+function rewriteApiUrl(url) {
+  for (const origin of LOCAL_API_ORIGINS) {
+    if (url.startsWith(origin)) {
+      return `${API_BASE}${url.slice(origin.length)}`;
+    }
   }
-  if (input instanceof Request && input.url.startsWith(LOCAL_API_ORIGIN)) {
-    return _origFetch(new Request(input.url.replace(LOCAL_API_ORIGIN, API_BASE), input), init);
+  return url;
+}
+
+window.fetch = (input, init) => {
+  if (typeof input === "string") {
+    return _origFetch(rewriteApiUrl(input), init);
+  }
+  if (input instanceof Request) {
+    const rewrittenUrl = rewriteApiUrl(input.url);
+    if (rewrittenUrl !== input.url) {
+      return _origFetch(new Request(rewrittenUrl, input), init);
+    }
   }
   return _origFetch(input, init);
 };

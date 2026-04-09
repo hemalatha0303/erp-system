@@ -1,12 +1,11 @@
 services:
   mysql:
     image: mysql:8.0
+    restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: root
-
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
       MYSQL_ROOT_HOST: "%"
-      MYSQL_DATABASE: erp_db
-    # e2-micro and other 1GB VMs: lower defaults so mysqld is not OOM-killed during first init
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-erp_db}
     command: >
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_unicode_ci
@@ -15,51 +14,48 @@ services:
       --innodb_redo_log_capacity=32M
       --table_open_cache=128
       --max_connections=100
-    # No host port publish needed; backend connects via Docker network ("mysql:3306")
     volumes:
       - erp_mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-proot"]
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p${MYSQL_ROOT_PASSWORD:-root} --silent"]
       interval: 10s
       timeout: 10s
       retries: 30
       start_period: 90s
-
-      MYSQL_DATABASE: erp_db
-    ports:
-      - "3306:3306"
-    volumes:
-      - erp_mysql_data:/var/lib/mysql
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-
 
   backend:
     build:
       context: ./Backend
       dockerfile: Dockerfile
     image: erp-backend:latest
+    restart: unless-stopped
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     environment:
-      DATABASE_URL: mysql+pymysql://root:root@mysql:3306/erp_db
+      DATABASE_URL: mysql+pymysql://root:${MYSQL_ROOT_PASSWORD:-root}@mysql:3306/${MYSQL_DATABASE:-erp_db}
       JWT_SECRET: ${JWT_SECRET:-change-this-in-production}
+      PASSWORD_RESET_BASE_URL: ${PASSWORD_RESET_BASE_URL:-http://localhost/reset-password.html}
     depends_on:
       mysql:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=5).read()\""]
+      interval: 20s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
 
   frontend:
     build:
       context: .
       dockerfile: docker/Dockerfile.frontend
     image: erp-frontend:latest
+    restart: unless-stopped
     ports:
       - "80:80"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
 
 volumes:
   erp_mysql_data:

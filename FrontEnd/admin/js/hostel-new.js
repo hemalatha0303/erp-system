@@ -1,6 +1,6 @@
 // Hostel Management JavaScript
 
-const BASE_URL = "http://127.0.0.1:8000";
+const BASE_URL = window.API_BASE_URL || `${window.location.origin}/api`;
 let currentEditRoomId = null;
 let currentEditAllocationId = null;
 let allRooms = [];

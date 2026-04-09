@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 
 from app.routers.auth import router as auth_router
 from app.routers.student import router as student_router
@@ -11,9 +12,11 @@ from app.routers.admin import router as admin_router
 from app.routers.library import router as library_router
 from app.routers.hod import router as hod_router
 from app.routers.ai_route import router as ai_router
+from app.core.database import check_database_connection, init_db
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import os
+
 app = FastAPI(title="ERP Student Management System")
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -26,14 +29,30 @@ app.mount(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://127.0.0.1:8080",
-        "http://localhost:8080",
         "*",
     ],
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.on_event("startup")
+def startup_event():
+    init_db()
+
+
+@app.get("/health")
+def health_check():
+    database_ok = check_database_connection()
+    status_code = 200 if database_ok else 503
+    return JSONResponse(
+        status_code=status_code,
+        content={
+            "status": "healthy" if database_ok else "degraded",
+            "database": "connected" if database_ok else "unavailable",
+        },
+    )
 
 
 app.include_router(auth_router)
